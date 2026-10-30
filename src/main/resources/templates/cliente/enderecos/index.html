@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Meus endereços | Cupcakes Gourmet</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-rose-50 text-slate-800">
+<main class="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
+    <div class="mb-8 flex items-center justify-between gap-4">
+        <div>
+            <p class="text-sm font-semibold uppercase tracking-wider text-rose-600">Minha conta</p>
+            <h1 class="mt-2 text-3xl font-extrabold">Meus endereços</h1>
+        </div>
+        <a th:href="@{/cliente/enderecos/novo}"
+           class="rounded-lg bg-rose-600 px-4 py-3 font-semibold text-white hover:bg-rose-700">Novo endereço</a>
+    </div>
+    <p th:if="${sucesso}" th:text="${sucesso}" class="mb-4 rounded-lg bg-green-100 p-3 text-green-800"></p>
+    <p th:if="${erro}" th:text="${erro}" class="mb-4 rounded-lg bg-red-100 p-3 text-red-800"></p>
+    <div class="grid gap-4 md:grid-cols-2">
+        <article th:each="endereco : ${enderecos}"
+                 class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-rose-100">
+            <div class="flex items-start justify-between gap-4">
+                <div>
+                    <h2 class="font-bold" th:text="${endereco.nomeDestinatario}">Casa</h2>
+                    <span th:if="${endereco.enderecoPrincipal}"
+                          class="mt-1 inline-block rounded-full bg-rose-100 px-2 py-1 text-xs font-bold text-rose-700">Principal</span>
+                </div>
+                <form th:action="@{/cliente/enderecos/deletar/{id}(id=${endereco.id})}" method="post">
+                    <button type="submit" class="text-sm font-semibold text-red-600 hover:text-red-800">Excluir</button>
+                </form>
+            </div>
+            <p class="mt-4" th:text="${endereco.logradouro + ', ' + endereco.numero}">Rua das Flores, 10</p>
+            <p class="text-sm text-slate-500"
+               th:text="${(endereco.complemento ?: '') + ' ' + endereco.bairro + ' - ' + endereco.cidade + '/' + endereco.uf}">Centro - Cidade/SP</p>
+            <p class="mt-1 text-sm text-slate-500" th:text="${'CEP: ' + endereco.cep}">CEP: 00000-000</p>
+        </article>
+        <p th:if="${#lists.isEmpty(enderecos)}"
+           class="rounded-2xl bg-white p-8 text-center text-slate-500 md:col-span-2">
+            Nenhum endereço cadastrado.
+        </p>
+    </div>
+</main>
+</body>
+</html>

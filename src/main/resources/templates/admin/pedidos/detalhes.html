@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Detalhes do pedido | Cupcakes Gourmet</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-slate-100 text-slate-800">
+<header class="bg-slate-900 text-white shadow">
+    <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-5 sm:px-6 lg:px-8">
+        <div>
+            <p class="text-xs font-semibold uppercase tracking-widest text-rose-300">Painel administrativo</p>
+            <h1 class="text-2xl font-bold" th:text="${'Pedido #' + pedido.id}">Pedido #1</h1>
+        </div>
+        <a th:href="@{/admin/pedidos}" class="rounded-lg bg-white/10 px-4 py-2 text-sm hover:bg-white/20">Voltar aos pedidos</a>
+    </div>
+</header>
+<main class="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
+    <div class="mb-6 grid gap-4 md:grid-cols-3">
+        <div class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
+            <p class="text-sm text-slate-500">Cliente</p>
+            <p class="mt-1 font-bold" th:text="${pedido.cliente.nomeCompleto}">Cliente</p>
+            <p class="text-sm text-slate-500" th:text="${pedido.cliente.email}">cliente@email.com</p>
+            <p class="text-sm text-slate-500" th:text="${pedido.telefoneCliente}"> (00) 00000-0000</p>
+            <p class="text-sm text-slate-500" th:text="${'CPF: ' + pedido.cpfCliente}">CPF</p>
+            <p class="text-xs text-slate-400" th:text="${'ID: ' + pedido.cliente.id}">ID: 1</p>
+        </div>
+        <div class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
+            <p class="text-sm text-slate-500">Data do pedido</p>
+            <p class="mt-1 font-bold" th:text="${#temporals.format(pedido.data, 'dd/MM/yyyy HH:mm')}">01/01/2026 10:00</p>
+        </div>
+        <div class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
+            <p class="text-sm text-slate-500">Valor total</p>
+            <p class="mt-1 text-xl font-extrabold text-rose-600"
+               th:text="${'R$ ' + #numbers.formatDecimal(pedido.valorTotal, 1, 2)}">R$ 0,00</p>
+        </div>
+    </div>
+    <div class="grid gap-6 lg:grid-cols-[1fr_20rem]">
+        <section class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200">
+            <div class="border-b border-slate-100 px-6 py-4">
+                <h2 class="font-bold">Itens comprados</h2>
+            </div>
+            <div class="divide-y divide-slate-100">
+                <div th:each="item : ${pedido.itens}" class="flex items-center justify-between gap-4 px-6 py-4">
+                    <div>
+                        <p class="font-semibold" th:text="${item.cupcake.nome}">Cupcake</p>
+                        <p class="text-sm text-slate-500"
+                           th:text="${item.quantidade + ' x R$ ' + #numbers.formatDecimal(item.precoUnitario, 1, 2)}">2 x R$ 12,50</p>
+                    </div>
+                    <p class="font-semibold text-rose-600"
+                       th:text="${'R$ ' + #numbers.formatDecimal(item.subtotal, 1, 2)}">R$ 25,00</p>
+                </div>
+            </div>
+        </section>
+        <section class="h-fit rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+            <h2 class="font-bold">Atualizar status</h2>
+            <p class="mt-1 text-sm text-slate-500">Status atual: <strong th:text="${pedido.status}">EM_PREPARO</strong></p>
+            <form th:action="@{/admin/pedidos/atualizar-status/{id}(id=${pedido.id})}" method="post" class="mt-5">
+                <label for="status" class="text-sm font-semibold">Novo status</label>
+                <select id="status" name="status" required class="mt-1 w-full rounded-lg border-slate-300 p-2.5">
+                    <option th:each="status : ${statusValues}" th:value="${status}" th:text="${status}"
+                            th:selected="${status == pedido.status}">EM_PREPARO</option>
+                </select>
+                <button type="submit" class="mt-4 w-full rounded-lg bg-rose-600 px-4 py-3 font-semibold text-white hover:bg-rose-700">
+                    Salvar novo status
+                </button>
+            </form>
+        </section>
+    </div>
+</main>
+</body>
+</html>

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Meus pedidos | Cupcakes Gourmet</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-rose-50 text-slate-800">
+<header class="bg-rose-600 text-white shadow">
+    <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-5 sm:px-6 lg:px-8">
+        <h1 class="text-2xl font-bold">Cupcakes Gourmet</h1>
+        <nav class="flex gap-3 text-sm">
+            <a th:href="@{/cliente/favoritos}" class="rounded-full bg-white/15 px-4 py-2 hover:bg-white/25">Favoritos</a>
+            <a th:href="@{/catalogo}" class="rounded-full bg-white/15 px-4 py-2 hover:bg-white/25">Catálogo</a>
+        </nav>
+    </div>
+</header>
+<main class="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
+    <div class="mb-8">
+        <p class="text-sm font-semibold uppercase tracking-wider text-rose-600">Painel do cliente</p>
+        <h2 class="mt-2 text-3xl font-extrabold">Meus pedidos</h2>
+        <p class="mt-2 text-slate-600">Consulte o andamento e os detalhes de cada compra.</p>
+    </div>
+
+    <div th:if="${#lists.isEmpty(pedidos)}" class="rounded-2xl bg-white p-10 text-center shadow-sm">
+        <p class="text-lg text-slate-600">Você ainda não realizou nenhum pedido.</p>
+        <a th:href="@{/catalogo}" class="mt-5 inline-block rounded-lg bg-rose-600 px-5 py-3 font-semibold text-white hover:bg-rose-700">Ver catálogo</a>
+    </div>
+
+    <div th:unless="${#lists.isEmpty(pedidos)}" class="space-y-5">
+        <article th:each="pedido : ${pedidos}" th:id="${'pedido-' + pedido.id}"
+                 class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-rose-100 sm:p-6">
+            <div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
+                <div>
+                    <p class="text-sm text-slate-500">Pedido</p>
+                    <h3 class="text-xl font-bold" th:text="${'#' + pedido.id}">#1</h3>
+                    <p class="mt-1 text-sm text-slate-500"
+                       th:text="${#temporals.format(pedido.data, 'dd/MM/yyyy HH:mm')}">23/10/2026 12:00</p>
+                </div>
+                <div class="text-left sm:text-right">
+                    <p class="text-sm text-slate-500">Total</p>
+                    <p class="text-xl font-extrabold text-rose-600"
+                       th:text="${'R$ ' + #numbers.formatDecimal(pedido.valorTotal, 1, 2)}">R$ 35,00</p>
+                </div>
+            </div>
+            <div class="mt-5">
+                <div class="flex items-center justify-between text-xs font-semibold text-slate-500">
+                    <span>Em preparo</span><span>Pronto</span><span>Em entrega</span><span>Finalizado</span>
+                </div>
+                <div class="mt-2 h-2 overflow-hidden rounded-full bg-slate-200">
+                    <div class="status-progress h-full rounded-full bg-rose-500 transition-all"
+                         th:classappend="${pedido.status.name() == 'EM_PREPARO' ? 'w-1/4' :
+                                          (pedido.status.name() == 'PRONTO' ? 'w-2/4' :
+                                          (pedido.status.name() == 'EM_ENTREGA' ? 'w-3/4' : 'w-full'))}"
+                         data-progress></div>
+                </div>
+            </div>
+            <div class="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <span class="inline-flex w-fit rounded-full bg-rose-100 px-3 py-1 text-sm font-bold text-rose-700"
+                      data-status
+                      th:text="${pedido.status.name() == 'AGUARDANDO_PAGAMENTO' ? 'Aguardando pagamento' :
+                                (pedido.status.name() == 'EM_PREPARO' ? 'Em preparo' :
+                                (pedido.status.name() == 'PRONTO' ? 'Pronto' :
+                                (pedido.status.name() == 'EM_ENTREGA' ? 'Em entrega' :
+                                (pedido.status.name() == 'CANCELADO' ? 'Cancelado' : 'Finalizado'))))}">Em preparo</span>
+                <a th:href="@{/cliente/pedidos/{id}(id=${pedido.id})}"
+                   class="inline-flex justify-center rounded-lg bg-rose-600 px-5 py-3 text-sm font-bold text-white shadow-sm hover:bg-rose-700">
+                    Ver Detalhes do Pedido
+                </a>
+            </div>
+        </article>
+    </div>
+</main>
+<script>
+    const labels = {
+        AGUARDANDO_PAGAMENTO: 'Aguardando pagamento',
+        EM_PREPARO: 'Em preparo',
+        PRONTO: 'Pronto',
+        EM_ENTREGA: 'Em entrega',
+        FINALIZADO: 'Finalizado',
+        CONCLUIDO: 'Finalizado',
+        CANCELADO: 'Cancelado'
+    };
+    const progress = {
+        EM_PREPARO: 'w-1/4',
+        PRONTO: 'w-2/4',
+        EM_ENTREGA: 'w-3/4',
+        FINALIZADO: 'w-full',
+        CONCLUIDO: 'w-full',
+        CANCELADO: 'w-full'
+    };
+
+    async function atualizarStatus() {
+        try {
+            const resposta = await fetch('/cliente/pedidos/status', {headers: {'Accept': 'application/json'}});
+            if (!resposta.ok) return;
+            const pedidos = await resposta.json();
+            pedidos.forEach(pedido => {
+                const card = document.getElementById('pedido-' + pedido.id);
+                if (!card) return;
+                card.querySelector('[data-status]').textContent = labels[pedido.status] || pedido.status;
+                card.querySelector('[data-progress]').className =
+                    'status-progress h-full rounded-full bg-rose-500 transition-all ' +
+                    (progress[pedido.status] || 'w-1/4');
+            });
+        } catch (erro) {
+            console.warn('Não foi possível atualizar os status dos pedidos.', erro);
+        }
+    }
+
+    setInterval(atualizarStatus, 15000);
+</script>
+</body>
+</html>

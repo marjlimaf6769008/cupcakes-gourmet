@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Gestão de pedidos | Cupcakes Gourmet</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-slate-100 text-slate-800">
+<header class="bg-slate-900 text-white shadow">
+    <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-5 sm:px-6 lg:px-8">
+        <div>
+            <p class="text-xs font-semibold uppercase tracking-widest text-rose-300">Painel administrativo</p>
+            <h1 class="text-2xl font-bold">Gestão de pedidos</h1>
+        </div>
+        <div class="flex items-center gap-3">
+            <a th:href="@{/admin/pedidos}" class="rounded-lg bg-white/10 px-4 py-2 text-sm hover:bg-white/20">Pedidos</a>
+            <a th:href="@{/admin/relatorios}" class="rounded-lg bg-white/10 px-4 py-2 text-sm hover:bg-white/20">Relatórios</a>
+            <a th:href="@{/admin/cupcakes}" class="rounded-lg bg-white/10 px-4 py-2 text-sm hover:bg-white/20">Gestão de produtos</a>
+            <a th:href="@{/catalogo}" class="rounded-lg bg-white/10 px-4 py-2 text-sm hover:bg-white/20">Ver catálogo</a>
+        </div>
+    </div>
+</header>
+<main class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+    <div class="mb-6 flex items-center justify-between gap-4">
+        <div>
+            <h2 class="text-3xl font-extrabold">Pedidos realizados</h2>
+            <p class="mt-1 text-slate-500">Acompanhe e atualize o andamento dos pedidos.</p>
+        </div>
+    </div>
+    <p th:if="${sucesso}" th:text="${sucesso}" class="mb-4 rounded-lg bg-green-100 p-3 text-green-800"></p>
+    <div class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-slate-200">
+                <thead class="bg-slate-50">
+                <tr class="text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
+                    <th class="px-6 py-4">Pedido</th>
+                    <th class="px-6 py-4">Cliente</th>
+                    <th class="px-6 py-4">Data</th>
+                    <th class="px-6 py-4">Valor total</th>
+                    <th class="px-6 py-4">Status</th>
+                    <th class="px-6 py-4 text-right">Ação</th>
+                </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                <tr th:each="pedido : ${pedidos}" class="hover:bg-slate-50">
+                    <td class="whitespace-nowrap px-6 py-4 font-semibold" th:text="${'#' + pedido.id}">#1</td>
+                    <td class="px-6 py-4">
+                        <span class="font-medium" th:text="${pedido.cliente.nomeCompleto}">Cliente</span>
+                        <span class="block text-xs text-slate-500" th:text="${'ID: ' + pedido.cliente.id}">ID: 1</span>
+                    </td>
+                    <td class="whitespace-nowrap px-6 py-4"
+                        th:text="${#temporals.format(pedido.data, 'dd/MM/yyyy HH:mm')}">01/01/2026 10:00</td>
+                    <td class="whitespace-nowrap px-6 py-4 font-semibold text-rose-600"
+                        th:text="${'R$ ' + #numbers.formatDecimal(pedido.valorTotal, 1, 2)}">R$ 0,00</td>
+                    <td class="px-6 py-4">
+                        <span class="rounded-full px-3 py-1 text-xs font-bold"
+                              th:classappend="${pedido.status.name() == 'CANCELADO' ? ' bg-red-100 text-red-700' :
+                              (pedido.status.name() == 'FINALIZADO' or pedido.status.name() == 'CONCLUIDO' ? ' bg-green-100 text-green-700' :
+                              (pedido.status.name() == 'EM_ENTREGA' ? ' bg-blue-100 text-blue-700' :
+                              (pedido.status.name() == 'PRONTO' ? ' bg-amber-100 text-amber-700' : ' bg-rose-100 text-rose-700')))}"
+                              th:text="${pedido.status}">EM_PREPARO</span>
+                    </td>
+                    <td class="whitespace-nowrap px-6 py-4 text-right">
+                        <a th:href="@{/admin/pedidos/detalhes/{id}(id=${pedido.id})}"
+                           class="rounded-lg bg-rose-600 px-3 py-2 text-sm font-semibold text-white hover:bg-rose-700">
+                            Gerenciar / Alterar status
+                        </a>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(pedidos)}">
+                    <td colspan="6" class="px-6 py-12 text-center text-slate-500">Nenhum pedido realizado.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+</body>
+</html>

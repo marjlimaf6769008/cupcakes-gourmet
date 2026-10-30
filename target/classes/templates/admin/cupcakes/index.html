@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Gestão de cupcakes | Cupcakes Gourmet</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-slate-100 text-slate-800">
+<header class="bg-slate-900 text-white shadow">
+    <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-5 sm:px-6 lg:px-8">
+        <div>
+            <p class="text-xs font-semibold uppercase tracking-widest text-rose-300">Painel administrativo</p>
+            <h1 class="text-2xl font-bold">Gestão de cupcakes</h1>
+        </div>
+        <div class="flex items-center gap-3">
+            <a th:href="@{/admin/pedidos}" class="rounded-lg bg-white/10 px-4 py-2 text-sm hover:bg-white/20">Pedidos</a>
+            <a th:href="@{/admin/relatorios}" class="rounded-lg bg-white/10 px-4 py-2 text-sm hover:bg-white/20">Relatórios</a>
+            <a th:href="@{/admin/cupcakes}" class="rounded-lg bg-white/10 px-4 py-2 text-sm hover:bg-white/20">Gestão de produtos</a>
+            <a th:href="@{/catalogo}" class="rounded-lg bg-white/10 px-4 py-2 text-sm hover:bg-white/20">Ver catálogo</a>
+        </div>
+    </div>
+</header>
+<main class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+    <div class="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+        <div>
+            <h2 class="text-3xl font-extrabold">Produtos</h2>
+            <p class="mt-1 text-slate-500">Cadastre e mantenha o catálogo atualizado.</p>
+        </div>
+        <a th:href="@{/admin/cupcakes/novo}" class="rounded-lg bg-rose-600 px-5 py-3 text-center font-semibold text-white shadow hover:bg-rose-700">
+            Cadastrar novo cupcake
+        </a>
+    </div>
+
+    <div id="notificacoes" class="mb-6 rounded-2xl border border-rose-200 bg-rose-50 p-5"
+         aria-live="polite">
+        <div class="flex items-center justify-between gap-3">
+            <div>
+                <h3 class="font-bold text-rose-900">Notificações de pedidos</h3>
+                <p id="notificacoes-vazio" class="mt-1 text-sm text-rose-700">Nenhum pedido novo pendente de preparo.</p>
+            </div>
+            <span id="notificacoes-contador"
+                  class="hidden rounded-full bg-rose-600 px-3 py-1 text-sm font-bold text-white"></span>
+        </div>
+        <ul id="notificacoes-lista" class="mt-3 space-y-2"></ul>
+    </div>
+
+    <p th:if="${sucesso}" th:text="${sucesso}" class="mb-4 rounded-lg bg-green-100 p-3 text-green-800"></p>
+    <p th:if="${erro}" th:text="${erro}" class="mb-4 rounded-lg bg-red-100 p-3 text-red-800"></p>
+
+    <div class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-slate-200">
+                <thead class="bg-slate-50">
+                <tr class="text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
+                    <th class="px-6 py-4">Produto</th>
+                    <th class="px-6 py-4">Descrição</th>
+                    <th class="px-6 py-4">Preço</th>
+                    <th class="px-6 py-4 text-right">Ações</th>
+                </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                <tr th:each="cupcake : ${cupcakes}" class="hover:bg-slate-50">
+                    <td class="whitespace-nowrap px-6 py-4">
+                        <div class="flex items-center gap-3">
+                            <img th:src="${cupcake.fotoUrl ?: 'https://images.unsplash.com/photo-1587668178277-295251f900ce?w=160'}"
+                                 th:alt="${cupcake.nome}" class="h-12 w-12 rounded-lg object-cover">
+                            <span class="font-semibold text-slate-900" th:text="${cupcake.nome}">Red Velvet</span>
+                        </div>
+                    </td>
+                    <td class="max-w-sm px-6 py-4 text-sm text-slate-600" th:text="${cupcake.descricao}">Descrição</td>
+                    <td class="whitespace-nowrap px-6 py-4 font-semibold text-rose-600"
+                        th:text="${'R$ ' + #numbers.formatDecimal(cupcake.preco, 1, 2)}">R$ 12,00</td>
+                    <td class="whitespace-nowrap px-6 py-4 text-right">
+                        <a th:href="@{/admin/cupcakes/editar/{id}(id=${cupcake.id})}" class="mr-3 font-semibold text-slate-700 hover:text-rose-600">Editar</a>
+                        <form th:action="@{/admin/cupcakes/deletar/{id}(id=${cupcake.id})}" method="post" class="inline">
+                            <button type="submit" class="font-semibold text-red-600 hover:text-red-800"
+                                    onclick="return confirm('Deseja realmente remover este cupcake?')">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(cupcakes)}">
+                    <td colspan="4" class="px-6 py-12 text-center text-slate-500">Nenhum cupcake cadastrado.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+<script>
+    const listaNotificacoes = document.getElementById('notificacoes-lista');
+    const vazioNotificacoes = document.getElementById('notificacoes-vazio');
+    const contadorNotificacoes = document.getElementById('notificacoes-contador');
+
+    async function atualizarNotificacoes() {
+        const resposta = await fetch('/admin/api/notificacoes/novas', {
+            headers: {'Accept': 'application/json'}
+        });
+        if (!resposta.ok) {
+            throw new Error('Não foi possível consultar as notificações.');
+        }
+        const notificacoes = await resposta.json();
+        listaNotificacoes.replaceChildren();
+        notificacoes.forEach(notificacao => {
+            const item = document.createElement('li');
+            const link = document.createElement('a');
+            item.className = 'rounded-lg bg-white shadow-sm';
+            link.className = 'block px-4 py-3 text-sm text-rose-900 hover:bg-rose-100';
+            link.href = '/admin/pedidos/detalhes/' + encodeURIComponent(notificacao.pedidoId);
+            link.textContent = notificacao.mensagem + ' Ver e atualizar pedido';
+            item.appendChild(link);
+            listaNotificacoes.appendChild(item);
+        });
+        vazioNotificacoes.textContent = notificacoes.length
+            ? 'Novos pedidos aguardando preparo:'
+            : 'Nenhum pedido novo pendente de preparo.';
+        contadorNotificacoes.textContent = notificacoes.length;
+        contadorNotificacoes.classList.toggle('hidden', notificacoes.length === 0);
+    }
+
+    atualizarNotificacoes().catch(console.error);
+    window.setInterval(() => atualizarNotificacoes().catch(console.error), 10000);
+</script>
+</body>
+</html>

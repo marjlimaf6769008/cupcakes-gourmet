@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Entrar | Cupcakes Gourmet</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="flex min-h-screen items-center justify-center bg-rose-50 px-4">
+<main class="w-full max-w-md rounded-3xl bg-white p-8 shadow-xl ring-1 ring-rose-100">
+    <a th:href="@{/catalogo}" class="text-sm font-semibold text-rose-600">Cupcakes Gourmet</a>
+    <h1 class="mt-4 text-3xl font-extrabold">Bem-vindo de volta</h1>
+    <p class="mt-2 text-slate-600">Entre para continuar sua compra.</p>
+    <p th:if="${param.error}" class="mt-5 rounded-lg bg-red-100 p-3 text-sm text-red-800">E-mail ou senha inválidos.</p>
+    <p th:if="${param.logout}" class="mt-5 rounded-lg bg-green-100 p-3 text-sm text-green-800">Você saiu com segurança.</p>
+    <p th:if="${sucesso}" th:text="${sucesso}" class="mt-5 rounded-lg bg-green-100 p-3 text-sm text-green-800"></p>
+    <form th:action="@{/login}" method="post" class="mt-6 space-y-5">
+        <div>
+            <label for="username" class="mb-2 block font-semibold">E-mail</label>
+            <input id="username" name="username" type="email" autocomplete="email" required
+                   class="w-full rounded-lg border border-slate-300 px-4 py-3 outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-200">
+        </div>
+        <div>
+            <label for="password" class="mb-2 block font-semibold">Senha</label>
+            <input id="password" name="password" type="password" autocomplete="current-password" required
+                   class="w-full rounded-lg border border-slate-300 px-4 py-3 outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-200">
+        </div>
+        <button type="submit" class="w-full rounded-lg bg-rose-600 px-5 py-3 font-semibold text-white hover:bg-rose-700">Entrar</button>
+    </form>
+    <p class="mt-6 text-center text-sm text-slate-600">Ainda não tem conta?
+        <a th:href="@{/registrar}" class="font-semibold text-rose-600 hover:text-rose-700">Criar cadastro</a>
+    </p>
+</main>
+</body>
+</html>

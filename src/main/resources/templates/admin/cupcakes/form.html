@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${cupcakeForm.id == null ? 'Novo cupcake' : 'Editar cupcake'}">Novo cupcake</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-slate-100 text-slate-800">
+<main class="mx-auto max-w-3xl px-4 py-10 sm:px-6">
+    <div class="mb-6 flex items-center justify-between gap-4">
+        <div>
+            <p class="text-sm font-semibold uppercase tracking-wider text-rose-600">Painel administrativo</p>
+            <h1 class="mt-1 text-3xl font-extrabold" th:text="${cupcakeForm.id == null ? 'Cadastrar cupcake' : 'Editar cupcake'}">Cadastrar cupcake</h1>
+        </div>
+        <a th:href="@{/admin/cupcakes}" class="font-semibold text-slate-600 hover:text-rose-600">Voltar</a>
+    </div>
+
+    <form th:action="@{/admin/cupcakes/salvar}" th:object="${cupcakeForm}" method="post"
+          class="space-y-6 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200 sm:p-8">
+        <input type="hidden" th:field="*{id}">
+        <div th:if="${#fields.hasGlobalErrors()}" class="rounded-lg bg-red-100 p-3 text-sm text-red-800">
+            <p th:each="error : ${#fields.globalErrors()}" th:text="${error}">Erro no formulário.</p>
+        </div>
+
+        <div>
+            <label for="nome" class="mb-2 block font-semibold">Nome</label>
+            <input id="nome" type="text" th:field="*{nome}" minlength="3" required
+                   class="w-full rounded-lg border border-slate-300 px-4 py-3 outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-200">
+            <p th:if="${#fields.hasErrors('nome')}" th:errors="*{nome}" class="mt-1 text-sm text-red-600">Erro</p>
+        </div>
+
+        <div>
+            <label for="descricao" class="mb-2 block font-semibold">Descrição</label>
+            <textarea id="descricao" th:field="*{descricao}" rows="4" required
+                      class="w-full rounded-lg border border-slate-300 px-4 py-3 outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-200"></textarea>
+            <p th:if="${#fields.hasErrors('descricao')}" th:errors="*{descricao}" class="mt-1 text-sm text-red-600">Erro</p>
+        </div>
+
+        <div>
+            <label for="preco" class="mb-2 block font-semibold">Preço</label>
+            <input id="preco" type="number" th:field="*{preco}" min="0.01" step="0.01" required
+                   class="w-full rounded-lg border border-slate-300 px-4 py-3 outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-200">
+            <p th:if="${#fields.hasErrors('preco')}" th:errors="*{preco}" class="mt-1 text-sm text-red-600">Erro</p>
+        </div>
+
+        <div>
+            <label for="fotoUrl" class="mb-2 block font-semibold">URL da foto <span class="font-normal text-slate-400">(opcional)</span></label>
+            <input id="fotoUrl" type="text" th:field="*{fotoUrl}"
+                   class="w-full rounded-lg border border-slate-300 px-4 py-3 outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-200">
+        </div>
+
+        <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+            <a th:href="@{/admin/cupcakes}" class="rounded-lg px-5 py-3 text-center font-semibold text-slate-600 hover:bg-slate-100">Cancelar</a>
+            <button type="submit" class="rounded-lg bg-rose-600 px-5 py-3 font-semibold text-white hover:bg-rose-700">Salvar cupcake</button>
+        </div>
+    </form>
+</main>
+</body>
+</html>

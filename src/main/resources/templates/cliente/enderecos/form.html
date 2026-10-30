@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Novo endereço | Cupcakes Gourmet</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-rose-50 text-slate-800">
+<main class="mx-auto max-w-3xl px-4 py-10 sm:px-6 lg:px-8">
+    <div class="mb-8">
+        <p class="text-sm font-semibold uppercase tracking-wider text-rose-600">Entrega</p>
+        <h1 class="mt-2 text-3xl font-extrabold">Novo endereço</h1>
+    </div>
+    <form th:action="@{/cliente/enderecos/salvar}" th:object="${endereco}" method="post"
+          class="space-y-5 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-rose-100">
+        <input type="hidden" name="redirect" th:value="${redirect}">
+        <div>
+            <label for="nomeDestinatario" class="block text-sm font-semibold">Nome do destinatário</label>
+            <input id="nomeDestinatario" th:field="*{nomeDestinatario}" placeholder="Ex.: Casa ou Maria"
+                   class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2">
+            <p th:if="${#fields.hasErrors('nomeDestinatario')}" th:errors="*{nomeDestinatario}" class="mt-1 text-sm text-red-600"></p>
+        </div>
+        <div>
+            <label for="cep" class="block text-sm font-semibold">CEP</label>
+            <input id="cep" th:field="*{cep}" inputmode="numeric" maxlength="9"
+                   placeholder="00000-000" autocomplete="postal-code"
+                   class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2">
+            <p id="cep-mensagem" class="mt-1 text-sm text-slate-500">Digite o CEP para preencher o endereço.</p>
+            <p th:if="${#fields.hasErrors('cep')}" th:errors="*{cep}" class="mt-1 text-sm text-red-600"></p>
+        </div>
+        <div class="grid gap-4 md:grid-cols-[1fr_10rem]">
+            <div>
+                <label for="logradouro" class="block text-sm font-semibold">Logradouro</label>
+                <input id="logradouro" th:field="*{logradouro}" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2">
+            </div>
+            <div>
+                <label for="numero" class="block text-sm font-semibold">Número</label>
+                <input id="numero" th:field="*{numero}" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2">
+            </div>
+        </div>
+        <div>
+            <label for="complemento" class="block text-sm font-semibold">Complemento</label>
+            <input id="complemento" th:field="*{complemento}" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2">
+        </div>
+        <div class="grid gap-4 md:grid-cols-3">
+            <div>
+                <label for="bairro" class="block text-sm font-semibold">Bairro</label>
+                <input id="bairro" th:field="*{bairro}" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2">
+            </div>
+            <div>
+                <label for="cidade" class="block text-sm font-semibold">Cidade</label>
+                <input id="cidade" th:field="*{cidade}" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2">
+            </div>
+            <div>
+                <label for="uf" class="block text-sm font-semibold">UF</label>
+                <input id="uf" th:field="*{uf}" maxlength="2" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2">
+            </div>
+        </div>
+        <label class="flex items-center gap-2 text-sm font-semibold">
+            <input type="checkbox" th:field="*{enderecoPrincipal}" class="accent-rose-600">
+            Definir como endereço principal
+        </label>
+        <div class="flex justify-end gap-3">
+            <a th:href="${redirect == 'checkout' ? '/checkout' : '/cliente/enderecos'}"
+               class="rounded-lg border border-slate-300 px-4 py-3 font-semibold">Cancelar</a>
+            <button type="submit" class="rounded-lg bg-rose-600 px-5 py-3 font-semibold text-white hover:bg-rose-700">Salvar endereço</button>
+        </div>
+    </form>
+</main>
+<script th:src="@{/js/cep.js}"></script>
+</body>
+</html>

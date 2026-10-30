@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Meu carrinho | Cupcakes Gourmet</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-rose-50 text-slate-800">
+<header class="bg-rose-600 text-white shadow">
+    <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-5 sm:px-6 lg:px-8">
+        <h1 class="text-2xl font-bold">Cupcakes Gourmet</h1>
+        <a th:href="@{/catalogo}" class="rounded-full bg-white/15 px-4 py-2 text-sm hover:bg-white/25">Continuar comprando</a>
+    </div>
+</header>
+<main class="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
+    <h2 class="mb-8 text-3xl font-extrabold">Meu carrinho</h2>
+    <p th:if="${sucesso}" th:text="${sucesso}" class="mb-4 rounded-lg bg-green-100 p-3 text-green-800"></p>
+    <p th:if="${erro}" th:text="${erro}" class="mb-4 rounded-lg bg-red-100 p-3 text-red-800"></p>
+
+    <div th:if="${#lists.isEmpty(carrinho.itens)}" class="rounded-2xl bg-white p-10 text-center shadow-sm">
+        <p class="text-lg text-slate-600">Seu carrinho está vazio.</p>
+        <a th:href="@{/catalogo}" class="mt-5 inline-block rounded-lg bg-rose-600 px-5 py-3 font-semibold text-white hover:bg-rose-700">Ver catálogo</a>
+    </div>
+
+    <div th:unless="${#lists.isEmpty(carrinho.itens)}" class="space-y-4">
+        <article th:each="item : ${carrinho.itens}" class="flex flex-col gap-4 rounded-2xl bg-white p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+            <div>
+                <h3 class="text-lg font-bold" th:text="${item.cupcake.nome}">Cupcake</h3>
+                <p class="text-sm text-slate-500" th:text="${'R$ ' + #numbers.formatDecimal(item.cupcake.preco, 1, 2) + ' cada'}">R$ 10,00 cada</p>
+            </div>
+            <div class="flex items-center gap-4">
+                <form th:action="@{/carrinho/atualizar}" method="post" class="flex items-center gap-2">
+                    <input type="hidden" name="cupcakeId" th:value="${item.cupcake.id}">
+                    <input type="number" name="quantidade" min="0" th:value="${item.quantidade}" class="w-20 rounded-lg border border-slate-300 px-3 py-2 text-center">
+                    <button type="submit" class="rounded-lg bg-slate-800 px-3 py-2 text-sm font-semibold text-white hover:bg-slate-700">Atualizar</button>
+                </form>
+                <span class="min-w-24 text-right font-bold text-rose-600" th:text="${'R$ ' + #numbers.formatDecimal(item.calcularSubtotal(), 1, 2)}">R$ 20,00</span>
+                <form th:action="@{/carrinho/remover/{id}(id=${item.cupcake.id})}" method="post">
+                    <button type="submit" class="text-sm font-semibold text-red-600 hover:text-red-800">Remover</button>
+                </form>
+            </div>
+        </article>
+        <div class="flex items-center justify-between rounded-2xl bg-white p-5 shadow-sm">
+            <span class="text-xl font-bold">Total</span>
+            <span class="text-2xl font-extrabold text-rose-600" th:text="${'R$ ' + #numbers.formatDecimal(carrinho.calcularTotalGeral(), 1, 2)}">R$ 0,00</span>
+        </div>
+        <div class="text-right">
+            <a th:href="@{/checkout}" class="inline-block rounded-lg bg-rose-600 px-6 py-3 font-semibold text-white hover:bg-rose-700">
+                Finalizar compra
+            </a>
+        </div>
+    </div>
+</main>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<body>
+<header th:fragment="navbar" class="bg-rose-600 text-white shadow">
+    <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-5 sm:px-6 lg:px-8">
+        <!--<a th:href="@{/catalogo}" class="text-2xl font-bold">Cupcakes Gourmet</a>-->
+        <a th:href="@{/}">
+            <img th:src="@{/images/logo.png}" alt="Cupcakes Gourmet" class="h-12 w-auto">
+        </a>
+        <nav class="flex items-center gap-2 text-sm">
+            <a th:href="@{/carrinho}" sec:authorize="hasAuthority('ROLE_CLIENTE')"
+               class="rounded-full bg-white/15 px-4 py-2 hover:bg-white/25">Carrinho</a>
+            <a th:href="@{/cliente/favoritos}" sec:authorize="hasAuthority('ROLE_CLIENTE')"
+               title="Meus favoritos" aria-label="Meus favoritos"
+               class="rounded-full bg-white/15 p-2 text-white transition hover:bg-white/25">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                     fill="none" stroke="currentColor" stroke-width="2"
+                     class="h-5 w-5 text-white" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                          d="M21 8.25c0-2.485-2.239-4.5-5-4.5-1.752 0-3.288.832-4.2 2.094C10.888 4.582 9.252 3.75 7.5 3.75c-2.761 0-5 2.015-5 4.5 0 5.25 9.3 11.25 9.3 11.25S21 13.5 21 8.25Z"/>
+                </svg>
+            </a>
+            <a th:href="@{/cliente/enderecos}" sec:authorize="hasAuthority('ROLE_CLIENTE')"
+               class="rounded-full bg-white/15 px-4 py-2 hover:bg-white/25">Endereços</a>
+            <a th:href="@{/cliente/pedidos}" sec:authorize="hasAuthority('ROLE_CLIENTE')"
+               class="rounded-full bg-white/15 px-4 py-2 hover:bg-white/25">Meus pedidos</a>
+            <a th:href="@{/cliente/perfil}" sec:authorize="hasAuthority('ROLE_CLIENTE')"
+               class="rounded-full bg-white/15 px-4 py-2 hover:bg-white/25">Perfil</a>
+            <a th:href="@{/admin/cupcakes}" sec:authorize="hasRole('ADMIN')"
+               class="rounded-full bg-white/15 px-4 py-2 hover:bg-white/25">Administração</a>
+            <!--<a th:href="@{/admin/relatorios}" sec:authorize="hasRole('ADMIN')"
+               class="rounded-full bg-white/15 px-4 py-2 hover:bg-white/25">Relatórios</a>-->
+            <!--<a th:href="@{/admin/pedidos}" sec:authorize="hasRole('ADMIN')"
+               class="rounded-full bg-white/15 px-4 py-2 hover:bg-white/25">Pedidos</a>-->
+            <span sec:authorize="isAuthenticated()" class="hidden text-white/90 sm:inline">
+                Olá, <strong th:text="${#authentication.principal.primeiroNome}">Usuário</strong>
+            </span>
+            <a th:href="@{/login}" sec:authorize="isAnonymous()"
+               class="rounded-full bg-white px-4 py-2 font-semibold text-rose-700 hover:bg-rose-50">Entrar</a>
+            <a th:href="@{/registrar}" sec:authorize="isAnonymous()"
+               class="rounded-full bg-white/15 px-4 py-2 hover:bg-white/25">Cadastrar</a>
+            <form th:action="@{/logout}" method="post" sec:authorize="isAuthenticated()" class="inline">
+                <button type="submit" class="rounded-full bg-white/15 px-4 py-2 hover:bg-white/25">Sair</button>
+            </form>
+        </nav>
+    </div>
+</header>
+</body>
+</html>

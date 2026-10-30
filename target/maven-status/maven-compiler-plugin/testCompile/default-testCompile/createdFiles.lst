@@ -1,0 +1,3 @@
+br\com\cupcakesgourmet\service\UsuarioDetailsServiceTest.class
+br\com\cupcakesgourmet\controller\AuthControllerTest.class
+br\com\cupcakesgourmet\config\SecurityIntegrationTest.class

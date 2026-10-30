@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Checkout | Cupcakes Gourmet</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-rose-50 text-slate-800">
+<main class="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
+    <div class="mb-8 flex items-center justify-between">
+        <div>
+            <p class="text-sm font-semibold uppercase tracking-wider text-rose-600">Finalização</p>
+            <h1 class="mt-2 text-3xl font-extrabold">Como deseja pagar?</h1>
+        </div>
+        <a th:href="@{/carrinho}" class="font-semibold text-slate-600 hover:text-rose-600">Voltar ao carrinho</a>
+    </div>
+    <p th:if="${erro}" th:text="${erro}" class="mb-5 rounded-lg bg-red-100 p-3 text-red-800"></p>
+    <p th:if="${sucesso}" th:text="${sucesso}" class="mb-5 rounded-lg bg-green-100 p-3 text-green-800"></p>
+
+    <div class="grid gap-6 lg:grid-cols-5">
+        <form th:action="@{/checkout/processar}" method="post" id="checkout-form"
+              class="space-y-6 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-rose-100 lg:col-span-3">
+            <fieldset>
+                <legend class="mb-4 text-xl font-bold">Endereço de entrega</legend>
+                <div th:if="${#lists.isEmpty(enderecos)}"
+                     class="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+                    Você ainda não possui endereços cadastrados.
+                    <a th:href="@{/cliente/enderecos/novo(redirect='checkout')}"
+                       class="font-bold underline">Cadastrar novo endereço</a>
+                </div>
+                <div th:unless="${#lists.isEmpty(enderecos)}" class="space-y-3">
+                    <label th:each="endereco : ${enderecos}"
+                           class="flex cursor-pointer gap-3 rounded-xl border border-slate-200 p-4 has-[:checked]:border-rose-500 has-[:checked]:bg-rose-50">
+                        <input type="radio" name="enderecoId" th:value="${endereco.id}"
+                               th:checked="${endereco.enderecoPrincipal}" required class="mt-1 accent-rose-600">
+                        <span>
+                            <strong th:text="${endereco.nomeDestinatario}">Casa</strong>
+                            <span class="block text-sm text-slate-600"
+                                  th:text="${endereco.logradouro + ', ' + endereco.numero + ' - ' + endereco.bairro}">Rua, 10 - Centro</span>
+                            <span class="block text-sm text-slate-500"
+                                  th:text="${endereco.cidade + '/' + endereco.uf + ' - CEP ' + endereco.cep}">Cidade/SP - CEP</span>
+                        </span>
+                    </label>
+                    <a th:href="@{/cliente/enderecos/novo(redirect='checkout')}"
+                       class="inline-block text-sm font-bold text-rose-600 hover:text-rose-700">
+                        + Novo endereço de entrega
+                    </a>
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend class="mb-4 text-xl font-bold">Forma de pagamento</legend>
+                <div class="grid gap-3 sm:grid-cols-2">
+                    <label class="cursor-pointer rounded-xl border border-slate-200 p-4 has-[:checked]:border-rose-500 has-[:checked]:bg-rose-50">
+                        <input type="radio" name="formaPagamento" value="PIX" checked class="mr-2 accent-rose-600">
+                        <span class="font-semibold">PIX</span>
+                        <p class="mt-1 text-sm text-slate-500">Aprovação simulada imediata</p>
+                    </label>
+                    <label class="cursor-pointer rounded-xl border border-slate-200 p-4 has-[:checked]:border-rose-500 has-[:checked]:bg-rose-50">
+                        <input type="radio" name="formaPagamento" value="CARTAO" class="mr-2 accent-rose-600">
+                        <span class="font-semibold">Cartão de crédito</span>
+                        <p class="mt-1 text-sm text-slate-500">Dados usados apenas na simulação</p>
+                    </label>
+                </div>
+            </fieldset>
+
+            <div id="pix-fields" class="rounded-xl bg-emerald-50 p-5">
+                <h2 class="font-bold text-emerald-900">PIX</h2>
+                <p class="mt-1 text-sm text-emerald-800">Use qualquer chave fictícia para concluir esta simulação.</p>
+                <label for="pix-chave" class="mt-4 block text-sm font-semibold text-emerald-900">Chave PIX</label>
+                <input id="pix-chave" type="text" placeholder="cliente@exemplo.com"
+                       class="mt-1 w-full rounded-lg border border-emerald-200 px-3 py-2">
+            </div>
+
+            <div id="card-fields" class="hidden space-y-4 rounded-xl bg-slate-50 p-5">
+                <h2 class="font-bold">Dados do cartão</h2>
+                <div>
+                    <label for="numero" class="block text-sm font-semibold">Número</label>
+                    <input id="numero" type="text" inputmode="numeric" placeholder="1111 2222 3333 4444"
+                           class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label for="validade" class="block text-sm font-semibold">Validade</label>
+                        <input id="validade" type="text" placeholder="12/30" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2">
+                    </div>
+                    <div>
+                        <label for="cvv" class="block text-sm font-semibold">CVV</label>
+                        <input id="cvv" type="text" inputmode="numeric" placeholder="123" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2">
+                    </div>
+                </div>
+            </div>
+            <input type="hidden" name="dadosPagamento" id="dados-pagamento">
+            <button type="submit" class="w-full rounded-lg bg-rose-600 px-5 py-3 font-semibold text-white hover:bg-rose-700">
+                Confirmar e pagar
+            </button>
+        </form>
+
+        <aside class="h-fit rounded-2xl bg-white p-6 shadow-sm ring-1 ring-rose-100 lg:col-span-2">
+            <h2 class="text-xl font-bold">Resumo do pedido</h2>
+            <div id="endereco-resumo" class="mt-4 rounded-xl bg-slate-50 p-4 text-sm">
+                <p class="font-bold text-slate-700">Entrega</p>
+                <p id="endereco-resumo-texto" class="mt-1 text-slate-600">Selecione um endereço.</p>
+            </div>
+            <div class="mt-5 divide-y divide-slate-100">
+                <div th:each="item : ${carrinho.itens}" class="flex justify-between gap-3 py-3 text-sm">
+                    <span th:text="${item.quantidade + 'x ' + item.cupcake.nome}">1x Red Velvet</span>
+                    <span class="font-semibold" th:text="${'R$ ' + #numbers.formatDecimal(item.calcularSubtotal(), 1, 2)}">R$ 12,00</span>
+                </div>
+            </div>
+            <div class="mt-5 flex justify-between border-t border-slate-200 pt-5 text-xl font-extrabold">
+                <span>Total</span>
+                <span class="text-rose-600" th:text="${'R$ ' + #numbers.formatDecimal(carrinho.calcularTotalGeral(), 1, 2)}">R$ 12,00</span>
+            </div>
+        </aside>
+    </div>
+</main>
+<script>
+    const pixFields = document.getElementById('pix-fields');
+    const cardFields = document.getElementById('card-fields');
+    const radios = document.querySelectorAll('input[name="formaPagamento"]');
+    const dados = document.getElementById('dados-pagamento');
+
+    function atualizarFormaPagamento() {
+        const cartao = document.querySelector('input[name="formaPagamento"]:checked').value === 'CARTAO';
+        pixFields.classList.toggle('hidden', cartao);
+        cardFields.classList.toggle('hidden', !cartao);
+    }
+
+    radios.forEach(radio => radio.addEventListener('change', atualizarFormaPagamento));
+    document.getElementById('checkout-form').addEventListener('submit', () => {
+        const cartao = document.querySelector('input[name="formaPagamento"]:checked').value === 'CARTAO';
+        dados.value = cartao
+            ? document.getElementById('numero').value
+            : document.getElementById('pix-chave').value;
+    });
+    atualizarFormaPagamento();
+
+    const enderecoResumo = document.getElementById('endereco-resumo-texto');
+    const enderecoRadios = document.querySelectorAll('input[name="enderecoId"]');
+    function atualizarResumoEndereco() {
+        const selecionado = document.querySelector('input[name="enderecoId"]:checked');
+        if (!selecionado) return;
+        const detalhes = selecionado.nextElementSibling;
+        enderecoResumo.textContent = detalhes.innerText.replace(/\n+/g, ' - ');
+    }
+    enderecoRadios.forEach(radio => radio.addEventListener('change', atualizarResumoEndereco));
+    atualizarResumoEndereco();
+</script>
+</body>
+</html>

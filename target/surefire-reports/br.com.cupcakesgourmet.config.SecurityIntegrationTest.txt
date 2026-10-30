@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: br.com.cupcakesgourmet.config.SecurityIntegrationTest
+-------------------------------------------------------------------------------
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 7.131 s -- in br.com.cupcakesgourmet.config.SecurityIntegrationTest

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Criar conta | Cupcakes Gourmet</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="flex min-h-screen items-center justify-center bg-rose-50 px-4 py-10">
+<main class="w-full max-w-lg rounded-3xl bg-white p-8 shadow-xl ring-1 ring-rose-100">
+    <a th:href="@{/catalogo}" class="text-sm font-semibold text-rose-600">Cupcakes Gourmet</a>
+    <h1 class="mt-4 text-3xl font-extrabold">Crie sua conta</h1>
+    <p class="mt-2 text-slate-600">Cadastre-se para comprar e acompanhar seus pedidos.</p>
+    <form th:action="@{/registrar}" th:object="${registro}" method="post" class="mt-6 space-y-5">
+        <div>
+            <label for="primeiroNome" class="mb-2 block font-semibold">Primeiro nome</label>
+            <input id="primeiroNome" type="text" th:field="*{primeiroNome}" autocomplete="given-name" required
+                   class="w-full rounded-lg border border-slate-300 px-4 py-3 outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-200">
+            <p th:if="${#fields.hasErrors('primeiroNome')}" th:errors="*{primeiroNome}" class="mt-1 text-sm text-red-600"></p>
+        </div>
+        <div>
+            <label for="sobrenome" class="mb-2 block font-semibold">Sobrenome</label>
+            <input id="sobrenome" type="text" th:field="*{sobrenome}" autocomplete="family-name" required
+                   class="w-full rounded-lg border border-slate-300 px-4 py-3 outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-200">
+            <p th:if="${#fields.hasErrors('sobrenome')}" th:errors="*{sobrenome}" class="mt-1 text-sm text-red-600"></p>
+        </div>
+        <div class="grid gap-5 sm:grid-cols-2">
+            <div>
+                <label for="cpf" class="mb-2 block font-semibold">CPF</label>
+                <input id="cpf" type="text" th:field="*{cpf}" inputmode="numeric" maxlength="14"
+                       placeholder="000.000.000-00" required
+                       class="w-full rounded-lg border border-slate-300 px-4 py-3 outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-200">
+                <p th:if="${#fields.hasErrors('cpf')}" th:errors="*{cpf}" class="mt-1 text-sm text-red-600"></p>
+            </div>
+            <div>
+                <label for="dataNascimento" class="mb-2 block font-semibold">Data de nascimento</label>
+                <input id="dataNascimento" type="text" th:field="*{dataNascimento}" inputmode="numeric"
+                       maxlength="10" placeholder="dd/mm/aaaa" required
+                       class="w-full rounded-lg border border-slate-300 px-4 py-3 outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-200">
+                <p th:if="${#fields.hasErrors('dataNascimento')}" th:errors="*{dataNascimento}" class="mt-1 text-sm text-red-600"></p>
+            </div>
+        </div>
+        <div>
+            <label for="telefone" class="mb-2 block font-semibold">Telefone</label>
+            <input id="telefone" type="text" th:field="*{telefone}" inputmode="tel" maxlength="15"
+                   placeholder="(00) 00000-0000" required
+                   class="w-full rounded-lg border border-slate-300 px-4 py-3 outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-200">
+            <p th:if="${#fields.hasErrors('telefone')}" th:errors="*{telefone}" class="mt-1 text-sm text-red-600"></p>
+        </div>
+        <div>
+            <label for="email" class="mb-2 block font-semibold">E-mail</label>
+            <input id="email" type="email" th:field="*{email}" autocomplete="email" required
+                   class="w-full rounded-lg border border-slate-300 px-4 py-3 outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-200">
+            <p th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="mt-1 text-sm text-red-600"></p>
+        </div>
+        <div>
+            <label for="senha" class="mb-2 block font-semibold">Senha</label>
+            <input id="senha" type="password" th:field="*{senha}" autocomplete="new-password" minlength="8" required
+                   class="w-full rounded-lg border border-slate-300 px-4 py-3 outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-200">
+            <p class="mt-1 text-xs text-slate-500">Use pelo menos 8 caracteres.</p>
+            <p th:if="${#fields.hasErrors('senha')}" th:errors="*{senha}" class="text-sm text-red-600"></p>
+        </div>
+        <div>
+            <label for="confirmacaoSenha" class="mb-2 block font-semibold">Confirmar senha</label>
+            <input id="confirmacaoSenha" type="password" th:field="*{confirmacaoSenha}" autocomplete="new-password" required
+                   class="w-full rounded-lg border border-slate-300 px-4 py-3 outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-200">
+            <p th:if="${#fields.hasErrors('confirmacaoSenha')}" th:errors="*{confirmacaoSenha}" class="mt-1 text-sm text-red-600"></p>
+        </div>
+        <button type="submit" class="w-full rounded-lg bg-rose-600 px-5 py-3 font-semibold text-white hover:bg-rose-700">Criar conta</button>
+    </form>
+    <p class="mt-6 text-center text-sm text-slate-600">Já possui conta?
+        <a th:href="@{/login}" class="font-semibold text-rose-600 hover:text-rose-700">Entrar</a>
+    </p>
+</main>
+<script>
+    const mascara = (id, formatar) => {
+        const campo = document.getElementById(id);
+        campo.addEventListener('input', () => campo.value = formatar(campo.value));
+    };
+    const digitos = valor => valor.replace(/\D/g, '');
+    mascara('cpf', valor => {
+        const v = digitos(valor).slice(0, 11);
+        return v.replace(/^(\d{3})(\d)/, '$1.$2').replace(/^(\d{3})\.(\d{3})(\d)/, '$1.$2.$3').replace(/\.(\d{3})(\d)/, '.$1-$2');
+    });
+    mascara('telefone', valor => {
+        const v = digitos(valor).slice(0, 11);
+        return v.replace(/^(\d{2})(\d)/, '($1) $2').replace(/(\d{5})(\d)/, '$1-$2');
+    });
+    mascara('dataNascimento', valor => {
+        const v = digitos(valor).slice(0, 8);
+        return v.replace(/^(\d{2})(\d)/, '$1/$2').replace(/(\d{2})\/(\d{2})(\d)/, '$1/$2/$3');
+    });
+</script>
+</body>
+</html>

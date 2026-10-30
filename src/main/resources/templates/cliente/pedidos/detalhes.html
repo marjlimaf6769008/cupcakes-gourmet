@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${'Pedido #' + pedido.id + ' | Cupcakes Gourmet'}">Detalhes do pedido</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @media print {
+            .no-print { display: none !important; }
+            body { background: white; }
+            .print-card { box-shadow: none; border: 1px solid #e2e8f0; }
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-rose-50 text-slate-800">
+<header class="bg-rose-600 text-white shadow no-print">
+    <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-5 sm:px-6 lg:px-8">
+        <div>
+            <p class="text-xs font-semibold uppercase tracking-widest text-rose-200">Comprovativo de compra</p>
+            <h1 class="text-2xl font-bold" th:text="${'Pedido #' + pedido.id}">Pedido #1</h1>
+        </div>
+        <a th:href="@{/cliente/pedidos}" class="rounded-lg bg-white/15 px-4 py-2 text-sm hover:bg-white/25">Meus pedidos</a>
+    </div>
+</header>
+
+<main class="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
+    <div class="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+        <div>
+            <p class="text-sm font-semibold uppercase tracking-wider text-rose-600">Resumo do pedido</p>
+            <h2 class="mt-1 text-3xl font-extrabold" th:text="${'Pedido #' + pedido.id}">Pedido #1</h2>
+            <p class="mt-1 text-sm text-slate-500"
+               th:text="${#temporals.format(pedido.data, 'dd/MM/yyyy ''às'' HH:mm')}">23/10/2026 às 12:00</p>
+        </div>
+        <span class="w-fit rounded-full bg-amber-100 px-4 py-2 text-sm font-bold text-amber-800"
+              th:text="${pedido.status.name() == 'AGUARDANDO_PAGAMENTO' ? 'Aguardando pagamento' :
+                        (pedido.status.name() == 'EM_PREPARO' ? 'Em preparo' :
+                        (pedido.status.name() == 'PRONTO' ? 'Pronto' :
+                        (pedido.status.name() == 'EM_ENTREGA' ? 'Em entrega' :
+                        (pedido.status.name() == 'CANCELADO' ? 'Cancelado' : 'Finalizado'))))}">Em preparo</span>
+    </div>
+
+    <div class="grid gap-6 lg:grid-cols-[1fr_21rem]">
+        <div class="space-y-6">
+            <section class="print-card overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-rose-100">
+                <div class="border-b border-slate-100 px-6 py-4">
+                    <h3 class="font-bold">Itens comprados</h3>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full min-w-[640px] text-left text-sm">
+                        <thead class="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+                        <tr>
+                            <th class="px-6 py-3">Produto</th>
+                            <th class="px-4 py-3">Quantidade</th>
+                            <th class="px-4 py-3">Preço unitário</th>
+                            <th class="px-6 py-3 text-right">Subtotal</th>
+                        </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                        <tr th:each="item : ${pedido.itens}">
+                            <td class="px-6 py-4">
+                                <div class="flex items-center gap-3">
+                                    <img class="h-14 w-14 rounded-lg object-cover ring-1 ring-slate-200"
+                                         th:src="${item.cupcake.fotoUrl != null and !#strings.isEmpty(item.cupcake.fotoUrl) ? item.cupcake.fotoUrl : 'https://placehold.co/112x112/fce7f3/be185d?text=♡'}"
+                                         th:alt="${item.cupcake.nome}">
+                                    <span class="font-semibold" th:text="${item.cupcake.nome}">Cupcake</span>
+                                </div>
+                            </td>
+                            <td class="px-4 py-4" th:text="${item.quantidade}">2</td>
+                            <td class="px-4 py-4" th:text="${'R$ ' + #numbers.formatDecimal(item.precoUnitario, 1, 2)}">R$ 12,50</td>
+                            <td class="px-6 py-4 text-right font-bold text-rose-600"
+                                th:text="${'R$ ' + #numbers.formatDecimal(item.subtotal, 1, 2)}">R$ 25,00</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="print-card rounded-2xl bg-white p-6 shadow-sm ring-1 ring-rose-100">
+                <h3 class="font-bold">Dados de entrega</h3>
+                <div class="mt-4 grid gap-3 text-sm sm:grid-cols-2">
+                    <p class="sm:col-span-2"><span class="text-slate-500">Destinatário:</span>
+                        <strong th:text="${pedido.nomeDestinatario}">Cliente</strong></p>
+                    <p class="sm:col-span-2"><span class="text-slate-500">Logradouro:</span>
+                        <span th:text="${pedido.logradouroEntrega + ', ' + pedido.numeroEntrega}">Rua, 100</span>
+                        <span th:if="${pedido.complementoEntrega != null and !#strings.isEmpty(pedido.complementoEntrega)}"
+                              th:text="${' - ' + pedido.complementoEntrega}"> - Apto 1</span></p>
+                    <p><span class="text-slate-500">Bairro:</span> <span th:text="${pedido.bairroEntrega}">Centro</span></p>
+                    <p><span class="text-slate-500">Cidade/UF:</span>
+                        <span th:text="${pedido.cidadeEntrega + ' / ' + pedido.ufEntrega}">São Paulo / SP</span></p>
+                    <p><span class="text-slate-500">CEP:</span> <span th:text="${pedido.cepEntrega}">00000-000</span></p>
+                </div>
+            </section>
+        </div>
+
+        <aside class="space-y-6">
+            <section class="print-card rounded-2xl bg-white p-6 shadow-sm ring-1 ring-rose-100">
+                <h3 class="font-bold">Resumo financeiro</h3>
+                <dl class="mt-4 space-y-3 text-sm">
+                    <div class="flex justify-between"><dt class="text-slate-500">Subtotal</dt>
+                        <dd th:text="${'R$ ' + #numbers.formatDecimal(pedido.valorTotal.subtract(taxaEntrega), 1, 2)}">R$ 35,00</dd></div>
+                    <div class="flex justify-between"><dt class="text-slate-500">Taxa de entrega</dt>
+                        <dd th:text="${taxaEntrega.signum() > 0 ? 'R$ ' + #numbers.formatDecimal(taxaEntrega, 1, 2) : 'Grátis'}">Grátis</dd></div>
+                    <div class="border-t border-slate-100 pt-3 flex justify-between text-base font-extrabold">
+                        <dt>Valor total pago</dt>
+                        <dd class="text-rose-600" th:text="${'R$ ' + #numbers.formatDecimal(pedido.valorTotal, 1, 2)}">R$ 35,00</dd>
+                    </div>
+                </dl>
+            </section>
+
+            <section class="print-card rounded-2xl bg-white p-6 shadow-sm ring-1 ring-rose-100">
+                <h3 class="font-bold">Forma de pagamento</h3>
+                <p class="mt-4 text-sm">
+                    <span class="text-slate-500">Tipo:</span>
+                    <strong th:text="${pagamento == null ? 'Não informado' : (pagamento.tipo.name() == 'PIX' ? 'PIX' : 'Cartão de Crédito')}">PIX</strong>
+                </p>
+                <p class="mt-2 text-sm">
+                    <span class="text-slate-500">Status:</span>
+                    <strong th:text="${pagamento == null ? 'Não informado' :
+                                      (pagamento.status.name() == 'APROVADO' ? 'Aprovado' :
+                                      (pagamento.status.name() == 'RECUSADO' ? 'Recusado' : 'Pendente'))}">Aprovado</strong>
+                </p>
+            </section>
+        </aside>
+    </div>
+
+    <div class="no-print mt-8 flex flex-col-reverse justify-end gap-3 sm:flex-row">
+        <a th:href="@{/cliente/pedidos}" class="rounded-lg border border-slate-300 bg-white px-5 py-3 text-center font-semibold hover:bg-slate-50">
+            Voltar aos Meus Pedidos
+        </a>
+        <button type="button" onclick="window.print()"
+                class="rounded-lg bg-rose-600 px-5 py-3 font-semibold text-white hover:bg-rose-700">
+            Imprimir / Guardar Recibo (PDF)
+        </button>
+    </div>
+</main>
+</body>
+</html>

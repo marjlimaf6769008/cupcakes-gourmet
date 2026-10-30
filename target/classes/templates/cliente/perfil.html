@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Meu perfil | Cupcakes Gourmet</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-rose-50 text-slate-800">
+<main class="mx-auto max-w-3xl px-4 py-10 sm:px-6 lg:px-8">
+    <div class="mb-8">
+        <p class="text-sm font-semibold uppercase tracking-wider text-rose-600">Minha conta</p>
+        <h1 class="mt-2 text-3xl font-extrabold">Meu perfil</h1>
+    </div>
+    <p th:if="${sucesso}" th:text="${sucesso}" class="mb-4 rounded-lg bg-green-100 p-3 text-green-800"></p>
+    <form th:action="@{/cliente/perfil}" th:object="${perfil}" method="post"
+          class="space-y-5 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-rose-100">
+        <div class="grid gap-5 sm:grid-cols-2">
+            <div>
+                <label for="primeiroNome" class="block font-semibold">Primeiro nome</label>
+                <input id="primeiroNome" th:field="*{primeiroNome}" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2">
+                <p th:if="${#fields.hasErrors('primeiroNome')}" th:errors="*{primeiroNome}" class="text-sm text-red-600"></p>
+            </div>
+            <div>
+                <label for="sobrenome" class="block font-semibold">Sobrenome</label>
+                <input id="sobrenome" th:field="*{sobrenome}" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2">
+                <p th:if="${#fields.hasErrors('sobrenome')}" th:errors="*{sobrenome}" class="text-sm text-red-600"></p>
+            </div>
+        </div>
+        <div>
+            <label for="email" class="block font-semibold">E-mail</label>
+            <input id="email" th:field="*{email}" readonly class="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-slate-500">
+        </div>
+        <div class="grid gap-5 sm:grid-cols-2">
+            <div>
+                <label for="cpf" class="block font-semibold">CPF</label>
+                <input id="cpf" th:field="*{cpf}" maxlength="14" inputmode="numeric" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2">
+                <p th:if="${#fields.hasErrors('cpf')}" th:errors="*{cpf}" class="text-sm text-red-600"></p>
+            </div>
+            <div>
+                <label for="dataNascimento" class="block font-semibold">Data de nascimento</label>
+                <input id="dataNascimento" th:field="*{dataNascimento}" maxlength="10" inputmode="numeric" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2">
+                <p th:if="${#fields.hasErrors('dataNascimento')}" th:errors="*{dataNascimento}" class="text-sm text-red-600"></p>
+            </div>
+        </div>
+        <div>
+            <label for="telefone" class="block font-semibold">Telefone</label>
+            <input id="telefone" th:field="*{telefone}" maxlength="15" inputmode="tel" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2">
+            <p th:if="${#fields.hasErrors('telefone')}" th:errors="*{telefone}" class="text-sm text-red-600"></p>
+        </div>
+        <div class="flex justify-end gap-3">
+            <a th:href="@{/catalogo}" class="rounded-lg border border-slate-300 px-4 py-3 font-semibold">Cancelar</a>
+            <button type="submit" class="rounded-lg bg-rose-600 px-5 py-3 font-semibold text-white hover:bg-rose-700">Salvar alterações</button>
+        </div>
+    </form>
+</main>
+<script>
+    const digitos = valor => valor.replace(/\D/g, '');
+    const mascara = (id, formatar) => {
+        const campo = document.getElementById(id);
+        campo.addEventListener('input', () => campo.value = formatar(campo.value));
+    };
+    mascara('cpf', valor => {
+        const v = digitos(valor).slice(0, 11);
+        return v.replace(/^(\d{3})(\d)/, '$1.$2').replace(/^(\d{3})\.(\d{3})(\d)/, '$1.$2.$3').replace(/\.(\d{3})(\d)/, '.$1-$2');
+    });
+    mascara('telefone', valor => {
+        const v = digitos(valor).slice(0, 11);
+        return v.replace(/^(\d{2})(\d)/, '($1) $2').replace(/(\d{5})(\d)/, '$1-$2');
+    });
+    mascara('dataNascimento', valor => {
+        const v = digitos(valor).slice(0, 8);
+        return v.replace(/^(\d{2})(\d)/, '$1/$2').replace(/(\d{2})\/(\d{2})(\d)/, '$1/$2/$3');
+    });
+</script>
+</body>
+</html>

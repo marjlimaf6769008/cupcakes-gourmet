@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Relatórios de vendas | Cupcakes Gourmet</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-slate-100 text-slate-800">
+<header class="bg-slate-900 text-white shadow">
+    <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-5 sm:px-6 lg:px-8">
+        <div>
+            <p class="text-xs font-semibold uppercase tracking-widest text-rose-300">Painel administrativo</p>
+            <h1 class="text-2xl font-bold">Relatórios de vendas</h1>
+        </div>
+        <div class="flex items-center gap-3">
+            <a th:href="@{/admin/pedidos}" class="rounded-lg bg-white/10 px-4 py-2 text-sm hover:bg-white/20">Pedidos</a>
+            <a th:href="@{/admin/relatorios}" class="rounded-lg bg-white/10 px-4 py-2 text-sm hover:bg-white/20">Relatórios</a>
+            <a th:href="@{/admin/cupcakes}" class="rounded-lg bg-white/10 px-4 py-2 text-sm hover:bg-white/20">Gestão de produtos</a>
+            <a th:href="@{/catalogo}" class="rounded-lg bg-white/10 px-4 py-2 text-sm hover:bg-white/20">Ver catálogo</a>
+        </div>
+    </div>
+</header>
+<main class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+    <form method="get" th:action="@{/admin/relatorios}"
+          class="mb-8 grid gap-4 rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200 md:grid-cols-4 md:items-end">
+        <label class="text-sm font-semibold">Período
+            <select name="periodo" id="periodo" class="mt-1 w-full rounded-lg border-slate-300 p-2.5">
+                <option value="DIARIO" th:selected="${periodo == 'DIARIO'}">Diário</option>
+                <option value="SEMANAL" th:selected="${periodo == 'SEMANAL'}">Semanal</option>
+                <option value="MENSAL" th:selected="${periodo == 'MENSAL'}">Mensal</option>
+                <option value="CUSTOM" th:selected="${periodo == 'CUSTOM'}">Personalizado</option>
+            </select>
+        </label>
+        <label class="text-sm font-semibold">Data inicial
+            <input type="date" name="inicio" th:value="${inicio}" class="mt-1 w-full rounded-lg border-slate-300 p-2.5">
+        </label>
+        <label class="text-sm font-semibold">Data final
+            <input type="date" name="fim" th:value="${fim}" class="mt-1 w-full rounded-lg border-slate-300 p-2.5">
+        </label>
+        <button type="submit" class="rounded-lg bg-rose-600 px-4 py-3 font-semibold text-white hover:bg-rose-700">
+            Filtrar relatório
+        </button>
+    </form>
+
+    <div class="mb-8 grid gap-4 md:grid-cols-2">
+        <div class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+            <p class="text-sm font-semibold uppercase tracking-wide text-slate-500">Total de vendas</p>
+            <p id="total-vendas" class="mt-2 text-3xl font-extrabold text-rose-600"
+               th:text="${'R$ ' + #numbers.formatDecimal(totalVendas, 1, 2)}">R$ 0,00</p>
+        </div>
+        <div class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+            <p class="text-sm font-semibold uppercase tracking-wide text-slate-500">Quantidade de pedidos</p>
+            <p id="quantidade-pedidos" class="mt-2 text-3xl font-extrabold text-slate-900"
+               th:text="${quantidadePedidos}">0</p>
+        </div>
+    </div>
+
+    <div class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-slate-200">
+                <thead class="bg-slate-50">
+                <tr class="text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
+                    <th class="px-6 py-4">Pedido</th>
+                    <th class="px-6 py-4">Data</th>
+                    <th class="px-6 py-4">Cliente</th>
+                    <th class="px-6 py-4">Status</th>
+                    <th class="px-6 py-4 text-right">Total</th>
+                </tr>
+                </thead>
+                <tbody id="pedidos-tbody" class="divide-y divide-slate-100">
+                <tr th:each="pedido : ${pedidos}" class="hover:bg-slate-50"
+                    th:attr="data-pedido-id=${pedido.id}">
+                    <td class="px-6 py-4 font-semibold" th:text="${'#' + pedido.id}">#1</td>
+                    <td class="px-6 py-4" th:text="${#temporals.format(pedido.data, 'dd/MM/yyyy HH:mm')}">01/01/2026 10:00</td>
+                    <td class="px-6 py-4" th:text="${pedido.cliente.nomeCompleto}">Cliente</td>
+                    <td class="px-6 py-4">
+                        <span class="status-badge rounded-full px-3 py-1 text-xs font-bold"
+                              th:classappend="${pedido.status.name() == 'CANCELADO' ? ' bg-red-100 text-red-700' :
+                              (pedido.status.name() == 'FINALIZADO' or pedido.status.name() == 'CONCLUIDO' ? ' bg-green-100 text-green-700' :
+                              (pedido.status.name() == 'EM_ENTREGA' ? ' bg-blue-100 text-blue-700' :
+                              (pedido.status.name() == 'PRONTO' ? ' bg-amber-100 text-amber-700' : ' bg-rose-100 text-rose-700')))}"
+                              th:text="${pedido.status}">EM_PREPARO</span>
+                    </td>
+                    <td class="px-6 py-4 text-right font-semibold text-rose-600"
+                        th:text="${'R$ ' + #numbers.formatDecimal(pedido.valorTotal, 1, 2)}">R$ 0,00</td>
+                </tr>
+                <tr id="pedidos-vazio" th:if="${#lists.isEmpty(pedidos)}">
+                    <td colspan="5" class="px-6 py-12 text-center text-slate-500">Nenhum pedido no período selecionado.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+<script>
+    const pedidosTbody = document.getElementById('pedidos-tbody');
+    const pedidosVazio = document.getElementById('pedidos-vazio');
+    const periodo = document.getElementById('periodo');
+    const inicio = document.querySelector('input[name="inicio"]');
+    const fim = document.querySelector('input[name="fim"]');
+    const totalVendas = document.getElementById('total-vendas');
+    const quantidadePedidos = document.getElementById('quantidade-pedidos');
+    const statusClasses = {
+        CANCELADO: 'bg-red-100 text-red-700',
+        FINALIZADO: 'bg-green-100 text-green-700',
+        CONCLUIDO: 'bg-green-100 text-green-700',
+        EM_ENTREGA: 'bg-blue-100 text-blue-700',
+        PRONTO: 'bg-amber-100 text-amber-700',
+        EM_PREPARO: 'bg-rose-100 text-rose-700',
+        AGUARDANDO_PAGAMENTO: 'bg-rose-100 text-rose-700'
+    };
+    const moeda = new Intl.NumberFormat('pt-BR', {style: 'currency', currency: 'BRL'});
+    const dataHora = new Intl.DateTimeFormat('pt-BR', {
+        dateStyle: 'short', timeStyle: 'short'
+    });
+
+    function atualizarStatus(linha, status) {
+        const badge = linha.querySelector('.status-badge');
+        const statusAnterior = badge.dataset.status;
+        if (statusAnterior && statusAnterior !== status) {
+            linha.classList.remove('status-atualizado');
+            void linha.offsetWidth;
+            linha.classList.add('status-atualizado');
+        }
+        badge.dataset.status = status;
+        badge.textContent = status;
+        badge.className = 'status-badge rounded-full px-3 py-1 text-xs font-bold '
+            + (statusClasses[status] || 'bg-slate-100 text-slate-700');
+    }
+
+    function atualizarLinha(pedido) {
+        let linha = pedidosTbody.querySelector('[data-pedido-id="' + pedido.id + '"]');
+        if (!linha) {
+            linha = document.createElement('tr');
+            linha.dataset.pedidoId = pedido.id;
+            linha.className = 'hover:bg-slate-50';
+            linha.innerHTML = '<td class="px-6 py-4 font-semibold"></td>' +
+                '<td class="px-6 py-4"></td><td class="px-6 py-4"></td>' +
+                '<td class="px-6 py-4"><span class="status-badge rounded-full px-3 py-1 text-xs font-bold"></span></td>' +
+                '<td class="px-6 py-4 text-right font-semibold text-rose-600"></td>';
+            pedidosTbody.prepend(linha);
+        }
+        linha.children[0].textContent = '#' + pedido.id;
+        linha.children[1].textContent = dataHora.format(new Date(pedido.data));
+        linha.children[2].textContent = pedido.clienteNome;
+        linha.children[4].textContent = moeda.format(pedido.valorTotal);
+        atualizarStatus(linha, pedido.status);
+    }
+
+    async function atualizarRelatorio() {
+        const params = new URLSearchParams({periodo: periodo.value});
+        if (inicio.value) params.set('inicio', inicio.value);
+        if (fim.value) params.set('fim', fim.value);
+        const resposta = await fetch('/admin/api/relatorios/pedidos-atualizados?' + params, {
+            headers: {'Accept': 'application/json'}
+        });
+        if (!resposta.ok) throw new Error('Não foi possível atualizar o relatório.');
+        const dados = await resposta.json();
+        const idsAtualizados = new Set(dados.pedidos.map(pedido => String(pedido.id)));
+        pedidosTbody.querySelectorAll('[data-pedido-id]').forEach(linha => {
+            if (!idsAtualizados.has(linha.dataset.pedidoId)) linha.remove();
+        });
+        dados.pedidos.forEach(atualizarLinha);
+        pedidosVazio?.classList.toggle('hidden', dados.pedidos.length > 0);
+        totalVendas.textContent = moeda.format(dados.totalVendas);
+        quantidadePedidos.textContent = dados.quantidadePedidos;
+    }
+
+    const style = document.createElement('style');
+    style.textContent = '@keyframes status-brilho { 0% { background-color: #fef3c7; } 100% { background-color: transparent; } } .status-atualizado { animation: status-brilho 1.5s ease-out; }';
+    document.head.appendChild(style);
+    atualizarRelatorio().catch(console.error);
+    window.setInterval(() => atualizarRelatorio().catch(console.error), 10000);
+</script>
+</body>
+</html>
