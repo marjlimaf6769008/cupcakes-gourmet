@@ -1,18 +1,27 @@
-# Usa uma imagem oficial do Java 17 (ou ajusta para a versão 21 se o teu projeto usar Java 21)
-FROM eclipse-temurin:17-jdk-jammy
+# Estágio de Build: Utiliza o JDK 27 para compilar o projeto com Maven
+FROM eclipse-temurin:27-jdk-jammy AS build
 
-# Define o diretório de trabalho dentro do container
+WORKDIR /build
+
+# Instala o Maven manualmente no container para garantir compatibilidade com a versão 27
+RUN apt-get update && apt-get install -y maven && rm -rf /var/lib/apt/lists/*
+
+# Copia o pom.xml e baixa as dependências
+COPY pom.xml .
+RUN mvn dependency:go-offline -B
+
+# Copia o código fonte e compila pulando os testes
+COPY src ./src
+RUN mvn clean package -DskipTests
+
+# Estágio de Execução: Roda a aplicação com o JRE 27
+FROM eclipse-temurin:27-jre-jammy
+
 WORKDIR /app
 
-# Copia todos os arquivos do projeto para dentro do container
-COPY . .
+# Copia o jar gerado no estágio anterior
+COPY --from=build /build/target/*.jar app.jar
 
-# Dá permissão de execução ao Maven Wrapper e compila o projeto sem rodar os testes
-RUN chmod +x ./mvnw
-RUN ./mvnw clean package -DskipTests
-
-# Expõe a porta padrão que o Spring Boot usa
 EXPOSE 8080
 
-# Comando para iniciar a aplicação gerada na pasta target
-CMD ["sh", "-c", "java -jar target/*.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar"]
