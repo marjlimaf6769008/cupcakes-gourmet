@@ -32,7 +32,7 @@ public class Cupcake {
     @Column(name = "foto_url", length = 500)
     private String fotoUrl;
 
-    protected Cupcake() {
+    public Cupcake() {
     }
 
     public Cupcake(String nome, String descricao, BigDecimal preco, String fotoUrl) {

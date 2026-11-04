@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: cupcakes-gourmet
+    env: java
+    region: oregon # ou ohio / frankfurt (escolhe a mais próxima)
+    plan: free
+    buildCommand: "./mvnw clean package -DskipTests"
+    startCommand: "java -jar target/*.jar"
+    envVars:
+      - key: JAVA_VERSION
+        value: 27 # ou 21 / 27 conforme a versão do teu Java local
