@@ -24,8 +24,10 @@
             <article th:each="cupcake : ${cupcakes}"
                      class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-rose-100 transition hover:-translate-y-1 hover:shadow-lg flex flex-col justify-between h-full">
                 <div class="relative">
-                    <img th:src="${cupcake.fotoUrl ?: 'https://images.unsplash.com/photo-1587668178277-295251f900ce?w=800'}"
-                         th:alt="${cupcake.nome}" class="h-52 w-full object-cover">
+                    <!--<img th:src="${cupcake.fotoUrl ?: 'https://images.unsplash.com/photo-1587668178277-295251f900ce?w=800'}"
+                         th:alt="${cupcake.nome}" class="h-52 w-full object-cover"> -->
+                    <img src="https://images.unsplash.com/photo-1587668178277-295251f900ce?w=800"
+                         class="h-52 w-full object-cover" alt="Cupcake">
                     <form th:action="@{/cliente/favoritos/adicionar/{id}(id=${cupcake.id})}"
                           method="post" sec:authorize="hasAuthority('ROLE_CLIENTE')"
                           class="absolute right-3 top-3 z-10">

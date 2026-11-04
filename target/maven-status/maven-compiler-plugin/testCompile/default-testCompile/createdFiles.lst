@@ -1,3 +1,9 @@
 br\com\cupcakesgourmet\service\UsuarioDetailsServiceTest.class
 br\com\cupcakesgourmet\controller\AuthControllerTest.class
+br\com\cupcakesgourmet\controller\CupcakeControllerTest.class
+br\com\cupcakesgourmet\model\session\CarrinhoTest.class
+br\com\cupcakesgourmet\service\CarrinhoServiceTest.class
+br\com\cupcakesgourmet\service\CheckoutServiceTest.class
 br\com\cupcakesgourmet\config\SecurityIntegrationTest.class
+br\com\cupcakesgourmet\repository\CupcakeRepositoryTest.class
+br\com\cupcakesgourmet\repository\UsuarioRepositoryTest.class

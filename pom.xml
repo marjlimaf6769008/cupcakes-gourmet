@@ -18,7 +18,7 @@
     <description>Vitrine e gestão de pedidos de cupcakes gourmet</description>
 
     <properties>
-        <java.version>27</java.version>
+        <java.version>21</java.version>
     </properties>
 
     <dependencies>
