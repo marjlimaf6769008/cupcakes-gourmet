@@ -1,5 +1,5 @@
 # Estágio de Build: Utiliza o JDK 27 para compilar o projeto com Maven
-FROM eclipse-temurin:27-jdk-jammy AS build
+FROM eclipse-temurin:27-jdk-alpine AS build
 
 WORKDIR /build
 
@@ -15,7 +15,7 @@ COPY src ./src
 RUN mvn clean package -DskipTests
 
 # Estágio de Execução: Roda a aplicação com o JRE 27
-FROM eclipse-temurin:27-jre-jammy
+FROM eclipse-temurin:27-jre-alpine
 
 WORKDIR /app
 
