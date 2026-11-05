@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Relatório de vendas</title>
+    <style>
+        body { font-family: Arial, sans-serif; color: #1e293b; }
+        h1 { margin-bottom: 4px; }
+        p { color: #475569; }
+        table { border-collapse: collapse; width: 100%; margin-top: 24px; }
+        th, td { border: 1px solid #cbd5e1; padding: 8px; text-align: left; }
+        th { background: #f1f5f9; }
+        @media print {
+            @page { margin: 15mm; }
+            .no-print { display: none; }
+        }
+    </style>
+</head>
+<body onload="window.print()">
+<button class="no-print" type="button" onclick="window.print()">Imprimir / Salvar como PDF</button>
+<h1>Relatório de vendas</h1>
+<p th:text="${'Período: ' + #temporals.format(inicio, 'dd/MM/yyyy') + ' a ' + #temporals.format(fim, 'dd/MM/yyyy')}">
+    Período
+</p>
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Cliente</th>
+        <th>Data</th>
+        <th>Valor total</th>
+        <th>Status</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="pedido : ${pedidos}">
+        <td th:text="${pedido.id}">1</td>
+        <td th:text="${pedido.cliente.nomeCompleto}">Cliente</td>
+        <td th:text="${#temporals.format(pedido.data, 'dd/MM/yyyy HH:mm')}">01/01/2026 10:00</td>
+        <td th:text="${'R$ ' + #numbers.formatDecimal(pedido.valorTotal, 1, 2)}">R$ 0,00</td>
+        <td th:text="${pedido.status}">FINALIZADO</td>
+    </tr>
+    <tr th:if="${#lists.isEmpty(pedidos)}">
+        <td colspan="5">Nenhuma venda no período selecionado.</td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

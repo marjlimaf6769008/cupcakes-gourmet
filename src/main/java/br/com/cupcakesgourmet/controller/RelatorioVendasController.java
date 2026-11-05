@@ -3,15 +3,20 @@ package br.com.cupcakesgourmet.controller;
 import br.com.cupcakesgourmet.model.entity.Pedido;
 import br.com.cupcakesgourmet.repository.PedidoRepository;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import jakarta.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 import java.util.Locale;
@@ -48,6 +53,63 @@ public class RelatorioVendasController {
         model.addAttribute("quantidadePedidos", ((Number) resumo[0]).longValue());
         model.addAttribute("totalVendas", converterTotal(resumo[1]));
         return "admin/relatorios";
+    }
+
+    @GetMapping("/vendas/export/csv")
+    @PreAuthorize("hasRole('ADMIN')")
+    public void exportarCsv(
+            @RequestParam(defaultValue = "MENSAL") String periodo,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            LocalDate inicio,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            LocalDate fim,
+            HttpServletResponse response) throws IOException {
+        List<Pedido> pedidos = buscarVendas(periodo, inicio, fim);
+
+        response.setContentType("text/csv; charset=UTF-8");
+        response.setCharacterEncoding("UTF-8");
+        response.setHeader("Content-Disposition", "attachment; filename=\"relatorio-vendas.csv\"");
+
+        try (PrintWriter writer = response.getWriter()) {
+            writer.write('\uFEFF');
+            writer.println("ID,Cliente,Data,Valor Total,Status");
+            for (Pedido pedido : pedidos) {
+                writer.printf("%s,%s,%s,%s,%s%n",
+                        csv(pedido.getId()),
+                        csv(pedido.getCliente().getNomeCompleto()),
+                        csv(pedido.getData().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))),
+                        csv(pedido.getValorTotal().toPlainString()),
+                        csv(pedido.getStatus()));
+            }
+        }
+    }
+
+    @GetMapping("/vendas/export/pdf")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String exportarPdf(
+            @RequestParam(defaultValue = "MENSAL") String periodo,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            LocalDate inicio,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            LocalDate fim,
+            Model model) {
+        Intervalo intervalo = calcularIntervalo(periodo, inicio, fim);
+        model.addAttribute("periodo", periodo);
+        model.addAttribute("inicio", intervalo.inicio());
+        model.addAttribute("fim", intervalo.fim());
+        model.addAttribute("pedidos", buscarVendas(periodo, inicio, fim));
+        return "admin/relatorios-vendas-impressao";
+    }
+
+    private List<Pedido> buscarVendas(String periodo, LocalDate inicio, LocalDate fim) {
+        Intervalo intervalo = calcularIntervalo(periodo, inicio, fim);
+        return pedidoRepository.findVendasByDataBetween(
+                intervalo.inicio().atStartOfDay(), intervalo.fimExclusivo().atStartOfDay());
+    }
+
+    private String csv(Object valor) {
+        String texto = valor == null ? "" : valor.toString();
+        return "\"" + texto.replace("\"", "\"\"") + "\"";
     }
 
     private BigDecimal converterTotal(Object valor) {

@@ -38,9 +38,19 @@
         <label class="text-sm font-semibold">Data final
             <input type="date" name="fim" th:value="${fim}" class="mt-1 w-full rounded-lg border-slate-300 p-2.5">
         </label>
-        <button type="submit" class="rounded-lg bg-rose-600 px-4 py-3 font-semibold text-white hover:bg-rose-700">
-            Filtrar relatório
-        </button>
+        <div class="flex flex-wrap gap-2">
+            <button type="submit" class="rounded-lg bg-rose-600 px-4 py-3 font-semibold text-white hover:bg-rose-700">
+                Filtrar relatório
+            </button>
+            <a th:href="@{/admin/relatorios/vendas/export/csv(periodo=${periodo},inicio=${inicio},fim=${fim})}"
+               class="flex items-center gap-2 rounded-lg bg-green-600 px-4 py-2 font-semibold text-white shadow hover:bg-green-700">
+                Exportar CSV / Excel
+            </a>
+            <a th:href="@{/admin/relatorios/vendas/export/pdf(periodo=${periodo},inicio=${inicio},fim=${fim})}"
+               class="flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 font-semibold text-white shadow hover:bg-red-700">
+                Exportar PDF
+            </a>
+        </div>
     </form>
 
     <div class="mb-8 grid gap-4 md:grid-cols-2">
