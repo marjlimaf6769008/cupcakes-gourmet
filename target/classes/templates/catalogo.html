@@ -12,7 +12,7 @@
 <main class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
     <section class="mx-auto max-w-7xl px-5 pb-10 pt-12 lg:px-8 lg:pt-20"><div class="grid items-center gap-10 lg:grid-cols-[1.05fr_.95fr]">
         <div><p class="mb-4 text-sm font-bold uppercase tracking-[.25em] text-rose">Pequenos momentos, grandes sabores</p><h1 class="serif max-w-xl text-5xl font-bold leading-[1.05] text-cocoa sm:text-6xl">Feitos para deixar o seu dia mais <em class="font-normal text-rose">doce.</em></h1><p class="mt-6 max-w-lg text-lg leading-8 text-stone-600">Cupcakes artesanais preparados com ingredientes selecionados e uma pitada generosa de carinho.</p><a href="#catalogo-produtos" class="mt-8 inline-flex items-center gap-2 rounded-full bg-rose px-6 py-3 font-bold text-white shadow-lg shadow-rose/20  bg-rose-600 px-4 py-3 font-semibold text-white hover:bg-rose-700">Explorar sabores <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg> </a></div>
-        <div class="relative mx-auto w-full max-w-lg"><div class="absolute -inset-4 -z-10 rounded-[3rem] bg-blush rotate-3"></div><img class="h-[22rem] w-full rounded-[2.5rem] object-cover shadow-soft sm:h-[28rem]" th:src="${cupcakes[0].fotoUrl != null ? cupcakes[0].fotoUrl : 'https://images.unsplash.com/photo-1587668178277-295251f900ce?w=800'}" alt="Cupcakes artesanais decorados em uma bandeja"><span class="absolute -bottom-4 -left-3 rounded-2xl bg-white px-5 py-3 shadow-soft"><strong class="block serif text-xl text-cocoa">+15 </strong><span class="text-xs text-stone-500">sabores disponíveis</span></span></div>
+        <div class="relative mx-auto w-full max-w-lg"><div class="absolute -inset-4 -z-10 rounded-[3rem] bg-blush rotate-3"></div><img class="h-[22rem] w-full rounded-[2.5rem] object-cover shadow-soft sm:h-[28rem]" src="https://images.unsplash.com/photo-1603532648955-039310d9ed75?" alt="Cupcakes artesanais decorados em uma bandeja"><span class="absolute -bottom-4 -left-3 rounded-2xl bg-white px-5 py-3 shadow-soft"><strong class="block serif text-xl text-cocoa">+15 </strong><span class="text-xs text-stone-500">sabores disponíveis</span></span></div>
     </div></section>
     <div class="mb-8">
         <p class="text-sm font-semibold uppercase tracking-wider text-rose-600">Nosso Catálogo</p>
@@ -24,10 +24,8 @@
             <article th:each="cupcake : ${cupcakes}"
                      class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-rose-100 transition hover:-translate-y-1 hover:shadow-lg flex flex-col justify-between h-full">
                 <div class="relative">
-                    <!--<img th:src="${cupcake.fotoUrl ?: 'https://images.unsplash.com/photo-1587668178277-295251f900ce?w=800'}"
-                         th:alt="${cupcake.nome}" class="h-52 w-full object-cover"> -->
-                    <img src="https://images.unsplash.com/photo-1587668178277-295251f900ce?w=800"
-                         class="h-52 w-full object-cover" alt="Cupcake">
+                    <img th:src="${cupcake.fotoUrl ?: 'https://images.unsplash.com/photo-1587668178277-295251f900ce?w=800'}"
+                         th:alt="${cupcake.nome}" class="h-52 w-full object-cover">
                     <form th:action="@{/cliente/favoritos/adicionar/{id}(id=${cupcake.id})}"
                           method="post" sec:authorize="hasAuthority('ROLE_CLIENTE')"
                           class="absolute right-3 top-3 z-10">
