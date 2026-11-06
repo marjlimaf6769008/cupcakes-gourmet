@@ -27,8 +27,8 @@
                     <img th:src="${cupcake.fotoUrl ?: 'https://images.unsplash.com/photo-1587668178277-295251f900ce?w=800'}"
                          th:alt="${cupcake.nome}" class="h-52 w-full object-cover">
                     <form th:action="@{/cliente/favoritos/adicionar/{id}(id=${cupcake.id})}"
-                          method="post" sec:authorize="hasAuthority('ROLE_CLIENTE')"
-                          class="absolute right-3 top-3 z-10">
+                        method="post" sec:authorize="hasAuthority('ROLE_CLIENTE')"
+                        class="absolute right-3 top-3 z-10">
                         <button type="submit" title="Adicionar aos favoritos"
                                 aria-label="Adicionar aos favoritos"
                                 class="flex h-11 w-11 items-center justify-center rounded-full bg-white/90 text-2xl leading-none text-rose-600 shadow-md backdrop-blur-sm transition hover:bg-white hover:text-rose-700">

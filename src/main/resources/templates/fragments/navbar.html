@@ -3,14 +3,24 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <body>
 <header th:fragment="navbar" class="bg-rose-600 text-white shadow">
-    <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-5 sm:px-6 lg:px-8">
-        <!--<a th:href="@{/catalogo}" class="text-2xl font-bold">Cupcakes Gourmet</a>-->
+    <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
         <a th:href="@{/}">
-            <img th:src="@{/images/logo.png}" alt="Cupcakes Gourmet" class="h-12 w-auto">
+            <img th:src="@{/images/logo.png}" alt="Cupcakes Gourmet" class="h-11 w-auto">
         </a>
-        <nav class="flex items-center gap-2 text-sm">
-            <a th:href="@{/carrinho}" sec:authorize="hasAuthority('ROLE_CLIENTE')"
-               class="rounded-full bg-white/15 px-4 py-2 hover:bg-white/25">Carrinho</a>
+        <nav class="flex items-center gap-2 text-sm" aria-label="Navegação principal">
+            <a th:href="@{/carrinho}" title="Carrinho" aria-label="Carrinho"
+               class="relative rounded-full bg-white/15 p-3 text-white transition hover:bg-white/25">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                     fill="none" stroke="currentColor" stroke-width="2"
+                     class="h-5 w-5" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386a1.5 1.5 0 0 1 1.458 1.145L5.5 6.75m0 0h13.387a1.5 1.5 0 0 1 1.455 1.864l-1.2 4.8a1.5 1.5 0 0 1-1.455 1.136H8.25a1.5 1.5 0 0 1-1.455-1.136L5.5 6.75Zm3.75 11.25a1.125 1.125 0 1 0 0 2.25 1.125 1.125 0 0 0 0-2.25Zm8.25 0a1.125 1.125 0 1 0 0 2.25 1.125 1.125 0 0 0 0-2.25Z"/>
+                </svg>
+                <span th:if="${carrinho != null and !#lists.isEmpty(carrinho.itens)}"
+                      th:text="${#lists.size(carrinho.itens)}"
+                      class="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-white px-1 text-xs font-bold text-rose-600">
+                    0
+                </span>
+            </a>
             <a th:href="@{/cliente/favoritos}" sec:authorize="hasAuthority('ROLE_CLIENTE')"
                title="Meus favoritos" aria-label="Meus favoritos"
                class="rounded-full bg-white/15 p-2 text-white transition hover:bg-white/25">
@@ -21,30 +31,68 @@
                           d="M21 8.25c0-2.485-2.239-4.5-5-4.5-1.752 0-3.288.832-4.2 2.094C10.888 4.582 9.252 3.75 7.5 3.75c-2.761 0-5 2.015-5 4.5 0 5.25 9.3 11.25 9.3 11.25S21 13.5 21 8.25Z"/>
                 </svg>
             </a>
-            <a th:href="@{/cliente/enderecos}" sec:authorize="hasAuthority('ROLE_CLIENTE')"
-               class="rounded-full bg-white/15 px-4 py-2 hover:bg-white/25">Endereços</a>
-            <a th:href="@{/cliente/pedidos}" sec:authorize="hasAuthority('ROLE_CLIENTE')"
-               class="rounded-full bg-white/15 px-4 py-2 hover:bg-white/25">Meus pedidos</a>
-            <a th:href="@{/cliente/perfil}" sec:authorize="hasAuthority('ROLE_CLIENTE')"
-               class="rounded-full bg-white/15 px-4 py-2 hover:bg-white/25">Perfil</a>
-            <a th:href="@{/admin/cupcakes}" sec:authorize="hasRole('ADMIN')"
-               class="rounded-full bg-white/15 px-4 py-2 hover:bg-white/25">Administração</a>
-            <!--<a th:href="@{/admin/relatorios}" sec:authorize="hasRole('ADMIN')"
-               class="rounded-full bg-white/15 px-4 py-2 hover:bg-white/25">Relatórios</a>-->
-            <!--<a th:href="@{/admin/pedidos}" sec:authorize="hasRole('ADMIN')"
-               class="rounded-full bg-white/15 px-4 py-2 hover:bg-white/25">Pedidos</a>-->
-            <span sec:authorize="isAuthenticated()" class="hidden text-white/90 sm:inline">
-                Olá, <strong th:text="${#authentication.principal.primeiroNome}">Usuário</strong>
-            </span>
-            <a th:href="@{/login}" sec:authorize="isAnonymous()"
-               class="rounded-full bg-white px-4 py-2 font-semibold text-rose-700 hover:bg-rose-50">Entrar</a>
-            <a th:href="@{/registrar}" sec:authorize="isAnonymous()"
-               class="rounded-full bg-white/15 px-4 py-2 hover:bg-white/25">Cadastrar</a>
-            <form th:action="@{/logout}" method="post" sec:authorize="isAuthenticated()" class="inline">
-                <button type="submit" class="rounded-full bg-white/15 px-4 py-2 hover:bg-white/25">Sair</button>
-            </form>
+
+            <div class="relative">
+                <button id="menu-toggle" type="button"
+                        class="flex items-center gap-2 rounded-full bg-white/15 p-3 transition hover:bg-white/25"
+                        aria-controls="account-menu" aria-expanded="false" aria-label="Abrir menu da conta">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                         fill="none" stroke="currentColor" stroke-width="2"
+                         class="h-5 w-5" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
+                    </svg>
+                    <span sec:authorize="isAuthenticated()" class="hidden sm:inline"
+                          th:text="${#authentication.principal.primeiroNome}">Perfil</span>
+                </button>
+
+                <div id="account-menu"
+                     class="absolute right-0 z-20 mt-2 hidden w-52 origin-top-right rounded-xl bg-white p-2 text-slate-700 shadow-xl ring-1 ring-black/5 transition duration-150 ease-out"
+                     role="menu">
+                    <div sec:authorize="isAuthenticated()">
+                        <a th:href="@{/cliente/enderecos}" class="block rounded-lg px-3 py-2 hover:bg-rose-50 hover:text-rose-700" role="menuitem">Endereços</a>
+                        <a th:href="@{/cliente/pedidos}" class="block rounded-lg px-3 py-2 hover:bg-rose-50 hover:text-rose-700" role="menuitem">Meus pedidos</a>
+                        <a th:href="@{/cliente/perfil}" class="block rounded-lg px-3 py-2 hover:bg-rose-50 hover:text-rose-700" role="menuitem">Perfil</a>
+                        <a th:href="@{/cliente/favoritos}" class="block rounded-lg px-3 py-2 hover:bg-rose-50 hover:text-rose-700" role="menuitem">Favoritos</a>
+                        <a th:href="@{/admin/cupcakes}" sec:authorize="hasRole('ADMIN')"
+                           class="block rounded-lg px-3 py-2 hover:bg-rose-50 hover:text-rose-700" role="menuitem">Administração</a>
+                        <form th:action="@{/logout}" method="post" class="mt-1 border-t border-slate-100 pt-1">
+                            <button type="submit" class="block w-full rounded-lg px-3 py-2 text-left hover:bg-rose-50 hover:text-rose-700" role="menuitem">Sair</button>
+                        </form>
+                    </div>
+                    <div sec:authorize="isAnonymous()">
+                        <a th:href="@{/login}" class="block rounded-lg px-3 py-2 font-semibold text-rose-700 hover:bg-rose-50" role="menuitem">Entrar</a>
+                        <a th:href="@{/registrar}" class="block rounded-lg px-3 py-2 hover:bg-rose-50 hover:text-rose-700" role="menuitem">Cadastrar</a>
+                    </div>
+                </div>
+            </div>
         </nav>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const toggleBtn = document.getElementById('menu-toggle');
+            const menu = document.getElementById('account-menu');
+
+            if (toggleBtn && menu) {
+                // Alterna a visibilidade ao clicar no botão
+                toggleBtn.addEventListener('click', (e) => {
+                    e.stopPropagation(); // Evita fechar imediatamente ao clicar
+                    menu.classList.toggle('hidden');
+
+                    // Atualiza o atributo acessível aria-expanded
+                    const isExpanded = toggleBtn.getAttribute('aria-expanded') === 'true';
+                    toggleBtn.setAttribute('aria-expanded', !isExpanded);
+                });
+
+                // Fecha o menu se o utilizador clicar fora dele
+                document.addEventListener('click', (e) => {
+                    if (!menu.contains(e.target) && !toggleBtn.contains(e.target)) {
+                        menu.classList.add('hidden');
+                        toggleBtn.setAttribute('aria-expanded', 'false');
+                    }
+                });
+            }
+        });
+    </script>
 </header>
 </body>
 </html>

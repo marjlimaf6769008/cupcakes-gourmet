@@ -23,10 +23,10 @@ public class SecurityConfig {
                                             LoginSuccessHandler loginSuccessHandler) throws Exception {
         http
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/", "/catalogo", "/login", "/registrar",
+                        .requestMatchers("/", "/catalogo", "/login", "/registrar", "/carrinho/**",
                                 "/css/**", "/js/**", "/images/**", "/h2-console/**").permitAll()
                         .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
-                        .requestMatchers("/carrinho/**", "/checkout/**", "/cliente/**")
+                        .requestMatchers("/checkout/**", "/cliente/**")
                         .hasAuthority("ROLE_CLIENTE")
                         .anyRequest().permitAll())
                 .formLogin(form -> form
