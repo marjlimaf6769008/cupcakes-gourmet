@@ -19,20 +19,9 @@ class CupcakeRepositoryTest {
     private CupcakeRepository repository;
 
     @BeforeEach
-    void limparDadosDoScriptDeCarga() {
-        repository.deleteAll();
-        repository.flush();
-    }
-
-    @BeforeEach
     void setUp() {
         repository.deleteAll();
-        Cupcake c = new Cupcake();
-        c.setNome("Red Velvet de Teste");
-        c.setPreco(BigDecimal.valueOf(12.50));
-        c.setDescricao("Delicioso");
-        c.setFotoUrl("https://images.unsplash.com/photo-1587668178277-295251f900ce?w=800");
-        repository.save(c);
+        repository.flush();
     }
 
     @Test

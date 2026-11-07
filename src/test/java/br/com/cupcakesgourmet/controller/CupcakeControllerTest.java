@@ -1,5 +1,6 @@
 package br.com.cupcakesgourmet.controller;
 
+import br.com.cupcakesgourmet.model.session.Carrinho;
 import br.com.cupcakesgourmet.model.entity.Cupcake;
 import br.com.cupcakesgourmet.repository.CupcakeRepository;
 import br.com.cupcakesgourmet.repository.FavoritoRepository;
@@ -25,6 +26,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class CupcakeControllerTest {
     @Autowired
     private MockMvc mockMvc;
+
+    @MockitoBean
+    private Carrinho carrinho;
 
     @MockitoBean
     private CupcakeRepository cupcakeRepository;
