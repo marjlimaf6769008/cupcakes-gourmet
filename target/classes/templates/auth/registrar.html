@@ -6,9 +6,10 @@
     <title>Criar conta | Cupcakes Gourmet</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="flex min-h-screen items-center justify-center bg-rose-50 px-4 py-10">
-<main class="w-full max-w-lg rounded-3xl bg-white p-8 shadow-xl ring-1 ring-rose-100">
-    <a th:href="@{/catalogo}" class="text-sm font-semibold text-rose-600">Cupcakes Gourmet</a>
+<!--<body class="flex min-h-screen items-center justify-center bg-rose-50 px-4 py-10">-->
+<body class="min-h-screen bg-rose-50 text-slate-800">
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+<main class="mx-auto w-full max-w-lg rounded-3xl bg-white p-8 shadow-xl ring-1 ring-rose-100">
     <h1 class="mt-4 text-3xl font-extrabold">Crie sua conta</h1>
     <p class="mt-2 text-slate-600">Cadastre-se para comprar e acompanhar seus pedidos.</p>
     <form th:action="@{/registrar}" th:object="${registro}" method="post" class="mt-6 space-y-5">

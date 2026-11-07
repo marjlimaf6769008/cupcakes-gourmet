@@ -49,12 +49,11 @@
                      class="absolute right-0 z-20 mt-2 hidden w-52 origin-top-right rounded-xl bg-white p-2 text-slate-700 shadow-xl ring-1 ring-black/5 transition duration-150 ease-out"
                      role="menu">
                     <div sec:authorize="isAuthenticated()">
-                        <a th:href="@{/cliente/enderecos}" class="block rounded-lg px-3 py-2 hover:bg-rose-50 hover:text-rose-700" role="menuitem">Endereços</a>
-                        <a th:href="@{/cliente/pedidos}" class="block rounded-lg px-3 py-2 hover:bg-rose-50 hover:text-rose-700" role="menuitem">Meus pedidos</a>
-                        <a th:href="@{/cliente/perfil}" class="block rounded-lg px-3 py-2 hover:bg-rose-50 hover:text-rose-700" role="menuitem">Perfil</a>
-                        <a th:href="@{/cliente/favoritos}" class="block rounded-lg px-3 py-2 hover:bg-rose-50 hover:text-rose-700" role="menuitem">Favoritos</a>
-                        <a th:href="@{/admin/cupcakes}" sec:authorize="hasRole('ADMIN')"
-                           class="block rounded-lg px-3 py-2 hover:bg-rose-50 hover:text-rose-700" role="menuitem">Administração</a>
+                        <a th:href="@{/cliente/enderecos}" sec:authorize="hasAuthority('ROLE_CLIENTE')" class="block rounded-lg px-3 py-2 hover:bg-rose-50 hover:text-rose-700" role="menuitem">Endereços</a>
+                        <a th:href="@{/cliente/pedidos}" sec:authorize="hasAuthority('ROLE_CLIENTE')" class="block rounded-lg px-3 py-2 hover:bg-rose-50 hover:text-rose-700" role="menuitem">Meus pedidos</a>
+                        <a th:href="@{/cliente/perfil}" sec:authorize="hasAuthority('ROLE_CLIENTE')" class="block rounded-lg px-3 py-2 hover:bg-rose-50 hover:text-rose-700" role="menuitem">Perfil</a>
+                        <a th:href="@{/cliente/favoritos}" sec:authorize="hasAuthority('ROLE_CLIENTE')" class="block rounded-lg px-3 py-2 hover:bg-rose-50 hover:text-rose-700" role="menuitem">Favoritos</a>
+                        <a th:href="@{/admin/cupcakes}" sec:authorize="hasRole('ADMIN')" class="block rounded-lg px-3 py-2 hover:bg-rose-50 hover:text-rose-700" role="menuitem">Administração</a>
                         <form th:action="@{/logout}" method="post" class="mt-1 border-t border-slate-100 pt-1">
                             <button type="submit" class="block w-full rounded-lg px-3 py-2 text-left hover:bg-rose-50 hover:text-rose-700" role="menuitem">Sair</button>
                         </form>

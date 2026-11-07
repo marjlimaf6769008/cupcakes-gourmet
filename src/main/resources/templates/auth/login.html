@@ -6,9 +6,11 @@
     <title>Entrar | Cupcakes Gourmet</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="flex min-h-screen items-center justify-center bg-rose-50 px-4">
-<main class="w-full max-w-md rounded-3xl bg-white p-8 shadow-xl ring-1 ring-rose-100">
-    <a th:href="@{/catalogo}" class="text-sm font-semibold text-rose-600">Cupcakes Gourmet</a>
+<!--<body class="flex min-h-screen items-center justify-center bg-rose-50 px-4">-->
+<body class="min-h-screen bg-rose-50 text-slate-800">
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+<main class="mx-auto w-full max-w-md rounded-3xl bg-white p-8 shadow-xl ring-1 ring-rose-100">
+<!--<main class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">-->
     <h1 class="mt-4 text-3xl font-extrabold">Bem-vindo de volta</h1>
     <p class="mt-2 text-slate-600">Entre para continuar sua compra.</p>
     <p th:if="${param.error}" class="mt-5 rounded-lg bg-red-100 p-3 text-sm text-red-800">E-mail ou senha inválidos.</p>
